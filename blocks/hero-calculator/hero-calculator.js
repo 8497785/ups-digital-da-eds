@@ -346,7 +346,46 @@ function buildCalculator(cell) {
   };
   const bubbleA = makeBubble('min');
   const bubbleB = makeBubble('max');
-  track.append(band, inputA, inputB, bubbleA, bubbleB);
+  /* drawn handles (source ._thumb_n76cl_90); invisible native inputs above take pointer and keys */
+  const makeHandle = () => {
+    const h = document.createElement('span');
+    h.className = 'hero-calculator-handle';
+    h.setAttribute('aria-hidden', 'true');
+    return h;
+  };
+  const handleA = makeHandle();
+  const handleB = makeHandle();
+  /* inactive rails with their end-stop dots (source ._rail_n76cl_33) */
+  const makeRail = (side) => {
+    const r = document.createElement('span');
+    r.className = 'hero-calculator-rail';
+    r.dataset.side = side;
+    r.setAttribute('aria-hidden', 'true');
+    return r;
+  };
+  track.append(makeRail('start'), makeRail('end'), band, handleA, handleB, inputA, inputB, bubbleA, bubbleB);
+  [[inputA, handleA], [inputB, handleB]].forEach(([input, h]) => {
+    input.addEventListener('pointerenter', () => { h.dataset.hovered = 'true'; });
+    input.addEventListener('pointerleave', () => { delete h.dataset.hovered; });
+    input.addEventListener('focus', () => {
+      if (input.matches(':focus-visible')) h.dataset.focusVisible = 'true';
+    });
+    input.addEventListener('keydown', () => { h.dataset.focusVisible = 'true'; });
+    input.addEventListener('blur', () => { delete h.dataset.focusVisible; });
+    input.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      h.dataset.dragging = 'true';
+      input.dataset.dragging = 'true';
+      const end = () => {
+        delete h.dataset.dragging;
+        delete input.dataset.dragging;
+        window.removeEventListener('pointerup', end);
+        window.removeEventListener('pointercancel', end);
+      };
+      window.addEventListener('pointerup', end);
+      window.addEventListener('pointercancel', end);
+    });
+  });
 
   term.append(bars, head, track);
 
@@ -407,6 +446,8 @@ function buildCalculator(cell) {
     bubbleB.textContent = fmtStop(b);
     bubbleA.style.setProperty('--at', pct(a).toFixed(4));
     bubbleB.style.setProperty('--at', pct(b).toFixed(4));
+    handleA.style.setProperty('--at', pct(a).toFixed(4));
+    handleB.style.setProperty('--at', pct(b).toFixed(4));
     barEls.forEach((bar, i) => bar.classList.toggle('is-selected', i >= lo && i <= hi));
     const text = `${money2.format((stops[lo] * config.rateLow) / 100)} to ${money2.format((stops[hi] * config.rateHigh) / 100)}${config.openEnded && hi === last ? '+' : ''}`;
     value.textContent = text;

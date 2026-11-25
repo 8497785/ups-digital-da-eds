@@ -60,6 +60,14 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
   --m-button-secondary-hover-edge: #121212;
   --m-button-secondary-hover-fill: #efeff2;
   --m-focus-ring-color: #85858e;
+  --m-focus-ring-width: 2px;
+  --m-focus-ring-offset: 4px;
+  --m-border-width-medium: 2px;
+  --m-border-width-heavy: 4px;
+  --m-radius-sm: 4px;
+  --m-radius-pill: 999px;
+  --m-space-2: 8px;
+  --m-space-5: 24px;
   --m-shadow-1: 0 1px 2px 0 #0000000d;
   --m-shadow-3: 0 2px 4px 0 #0000000f, 0 4px 8px 0 #00000014;
   --m-shadow-4: 0 4px 8px 0 #00000014, 0 8px 16px 0 #0000001f;
@@ -840,6 +848,7 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
   --rs-handle: 24px;
   --rs-gap: 8px;
   --rs-stop-inset: 2px;
+  --rs-hit: var(--m-space-5);
 
   display: flex;
   flex-direction: column;
@@ -958,19 +967,64 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
   cursor: default;
 }
 
-/* two overlaid native range inputs; only the thumbs take pointer input */
+/*
+ * Handles as on the source: a 24px hit box (44px on touch) with a 4px pill bar that widens to 8px
+ * with a 2px light-teal ring on hover, focus and drag; keyboard focus adds the grey square ring.
+ * Two overlaid native range inputs sit on top, invisible: only their thumbs take pointer input,
+ * and they carry the keyboard and screen-reader semantics.
+ * Rules below are ported from the source's ._thumb_n76cl_90 (hit box).
+ */
+.quote-drawer .quote-drawer-range-handle {
+  position: absolute;
+  inset-block-start: 50%;
+  box-sizing: border-box;
+  inline-size: var(--rs-hit);
+  block-size: var(--rs-handle);
+  border-radius: var(--m-radius-sm);
+  outline: var(--m-focus-ring-width) solid transparent;
+  outline-offset: var(--m-focus-ring-offset);
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+/* source: ._thumb_n76cl_90::before (the visible bar) */
+.quote-drawer .quote-drawer-range-handle::before {
+  content: "";
+  inline-size: var(--m-border-width-heavy);
+  border-radius: var(--m-radius-pill);
+  background-color: var(--m-color-selection-default);
+  transition-property: inline-size;
+  transition-duration: var(--m-duration-fast);
+  transition-timing-function: var(--m-easing-standard);
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  translate: -50%;
+}
+
+/* source: ._thumb_n76cl_90:not([data-disabled]):is([data-hovered], [data-focus-visible], [data-dragging])::before */
+.quote-drawer .quote-drawer-range-handle:not([data-disabled]):is([data-hovered], [data-focus-visible], [data-dragging])::before {
+  inline-size: var(--m-space-2);
+  box-shadow: 0 0 0 var(--m-border-width-medium) var(--m-color-selection-container);
+}
+
+/* source: ._ring_oc6e6_5[data-focus-visible] */
+.quote-drawer .quote-drawer-range-handle[data-focus-visible] {
+  outline-color: var(--m-focus-ring-color);
+}
+
 .quote-drawer .quote-drawer-range-thumb {
   position: absolute;
   top: 0;
-  left: -12px;
-  width: calc(100% + 24px);
+  left: calc(var(--rs-hit) / -2);
+  width: calc(100% + var(--rs-hit));
   height: var(--rs-handle);
   margin: 0;
   padding: 0;
   background: none;
+  opacity: 0;
   pointer-events: none;
   appearance: none;
-  accent-color: #0a8080;
 }
 
 .quote-drawer .quote-drawer-range-thumb:focus-visible {
@@ -988,54 +1042,44 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
 }
 
 .quote-drawer .quote-drawer-range-thumb::-webkit-slider-thumb {
-  box-sizing: border-box;
-  width: 24px;
+  width: var(--rs-hit);
   height: var(--rs-handle);
-  border: solid transparent;
-  border-width: 0 10px;
-  border-radius: 999px;
-  background-color: var(--m-color-selection-default);
-  background-clip: content-box;
+  border: 0;
+  background: none;
   pointer-events: auto;
   cursor: ew-resize;
   appearance: none;
-  transition: border-width var(--m-duration-fast) var(--m-easing-standard);
 }
 
 .quote-drawer .quote-drawer-range-thumb::-moz-range-thumb {
-  box-sizing: border-box;
-  width: 24px;
+  width: var(--rs-hit);
   height: var(--rs-handle);
-  border: solid transparent;
-  border-width: 0 10px;
-  border-radius: 999px;
-  background-color: var(--m-color-selection-default);
-  background-clip: content-box;
+  border: 0;
+  background: none;
   pointer-events: auto;
   cursor: ew-resize;
-  transition: border-width var(--m-duration-fast) var(--m-easing-standard);
 }
 
-.quote-drawer .quote-drawer-range-thumb:hover::-webkit-slider-thumb,
-.quote-drawer .quote-drawer-range-thumb:active::-webkit-slider-thumb,
-.quote-drawer .quote-drawer-range-thumb:focus-visible::-webkit-slider-thumb {
-  border-width: 0 8px;
+.quote-drawer .quote-drawer-range-thumb[data-dragging]::-webkit-slider-thumb {
+  cursor: grabbing;
 }
 
-.quote-drawer .quote-drawer-range-thumb:hover::-moz-range-thumb,
-.quote-drawer .quote-drawer-range-thumb:active::-moz-range-thumb,
-.quote-drawer .quote-drawer-range-thumb:focus-visible::-moz-range-thumb {
-  border-width: 0 8px;
+.quote-drawer .quote-drawer-range-thumb[data-dragging]::-moz-range-thumb {
+  cursor: grabbing;
 }
 
-.quote-drawer .quote-drawer-range-thumb:focus-visible::-webkit-slider-thumb {
-  outline: 2px solid var(--m-focus-ring-color);
-  outline-offset: 2px;
+/* touch: larger handles (source: crossing ranges on coarse pointers) */
+@media (pointer: coarse) {
+  .quote-drawer .quote-drawer-range {
+    --rs-handle: 44px;
+    --rs-hit: 44px;
+  }
 }
 
-.quote-drawer .quote-drawer-range-thumb:focus-visible::-moz-range-thumb {
-  outline: 2px solid var(--m-focus-ring-color);
-  outline-offset: 2px;
+@media (prefers-reduced-motion: reduce) {
+  .quote-drawer .quote-drawer-range-handle::before {
+    transition-duration: 0s;
+  }
 }
 
 /* ---------- choice tiles ---------- */

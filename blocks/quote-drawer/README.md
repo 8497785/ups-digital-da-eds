@@ -58,7 +58,10 @@ Illustrations are the hosted SVG exports in `/assets/shipping-insurance/`, autho
 - **Form step**: listbox select (button + popover listbox: arrows, Home/End, PageUp/Down, typeahead,
   Enter/Space, Esc, Left/Right on the closed trigger), two dual-thumb sliders (as hero-calculator: two
   native range inputs, handles can cross, the band is a focusable button that drags/moves both with
-  arrows, PageUp/Down, Home/End; clicking the rail moves the nearest handle), then radio/checkbox tiles with
+  arrows, PageUp/Down, Home/End; clicking the rail moves the nearest handle). The native inputs are
+  invisible; each handle is drawn as a `.quote-drawer-range-handle` span (source styling: 24px box,
+  4px pill bar widening to 8px with a 2px light-teal ring on hover/focus/drag, grey square focus ring
+  on keyboard focus, 44px on coarse pointers), positioned and state-synced from its input. Then radio/checkbox tiles with
   visually-hidden native inputs. Later questions reveal with `grid-template-rows: 0fr -> 1fr` + fade (320 ms
   enter easing). The footer shows the monthly estimate once a shipment type is chosen
   (`weekly x 52/12 x value x rate / 100`, low = low ends x low rate, high = high ends x high rate, `+` when a

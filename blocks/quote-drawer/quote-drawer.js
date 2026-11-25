@@ -529,8 +529,36 @@ function rangeField(config, labels, { onChange, onChangeEnd }) {
   });
   const a = thumb(nearestIndex(stops, Math.min(...config.start)));
   const b = thumb(nearestIndex(stops, Math.max(...config.start)));
-  track.append(railStart, railEnd, band, a, b);
+  /* drawn handles (as the source): the invisible native inputs above them take pointer and keys */
+  const handle = () => el('span', 'quote-drawer-range-handle', { 'aria-hidden': 'true' });
+  const ha = handle();
+  const hb = handle();
+  track.append(railStart, railEnd, band, ha, hb, a, b);
   root.append(head, help, track);
+  [[a, ha], [b, hb]].forEach(([input, h]) => {
+    input.addEventListener('pointerenter', () => { h.dataset.hovered = 'true'; });
+    input.addEventListener('pointerleave', () => { delete h.dataset.hovered; });
+    const markFocus = () => {
+      if (input.matches(':focus-visible')) h.dataset.focusVisible = 'true';
+      else delete h.dataset.focusVisible;
+    };
+    input.addEventListener('focus', markFocus);
+    input.addEventListener('keydown', () => { h.dataset.focusVisible = 'true'; });
+    input.addEventListener('blur', () => { delete h.dataset.focusVisible; });
+    input.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      h.dataset.dragging = 'true';
+      input.dataset.dragging = 'true';
+      const end = () => {
+        delete h.dataset.dragging;
+        delete input.dataset.dragging;
+        window.removeEventListener('pointerup', end);
+        window.removeEventListener('pointercancel', end);
+      };
+      window.addEventListener('pointerup', end);
+      window.addEventListener('pointercancel', end);
+    });
+  });
 
   let lo = 0;
   let hi = last;
@@ -549,6 +577,8 @@ function rangeField(config, labels, { onChange, onChangeEnd }) {
     band.disabled = lo === hi;
     track.style.setProperty('--rs-start', String(last ? lo / last : 0));
     track.style.setProperty('--rs-end', String(last ? hi / last : 1));
+    ha.style.left = `${last ? (va / last) * 100 : 0}%`;
+    hb.style.left = `${last ? (vb / last) * 100 : 100}%`;
     if (fire) onChange([stops[lo], stops[hi]]);
   };
   [a, b].forEach((input) => {

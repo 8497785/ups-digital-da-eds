@@ -365,13 +365,29 @@ main .hero-calculator a.hero-calculator-cta:focus-visible {
 .hero-calculator .hero-calculator-track {
   --rs-gap: 8px;
   --rs-inactive: #e7f2f2;
+  --rs-handle: 40px;
+  --m-space-1: 4px;
+  --m-space-2: 8px;
+  --m-space-5: 24px;
+  --rs-stop-inset: var(--m-space-1);
+  --rs-hit: var(--m-space-5);
+  --m-border-width-medium: 2px;
+  --m-border-width-heavy: 4px;
+  --m-radius-sm: 4px;
+  --m-radius-pill: 999px;
+  --m-color-selection-default: var(--brand-teal);
+  --m-color-selection-container: #e7f2f2;
+  --m-duration-fast: var(--duration-fast);
+  --m-easing-standard: var(--ease-standard);
+  --m-focus-ring-width: 2px;
+  --m-focus-ring-offset: 4px;
+  --m-focus-ring-color: var(--border-color);
 
   position: relative;
-  height: 40px;
+  height: var(--rs-handle);
 }
 
-.hero-calculator .hero-calculator-track::before,
-.hero-calculator .hero-calculator-track::after,
+.hero-calculator .hero-calculator-rail,
 .hero-calculator .hero-calculator-band {
   position: absolute;
   top: 50%;
@@ -379,28 +395,43 @@ main .hero-calculator a.hero-calculator-cta:focus-visible {
   translate: 0 -50%;
 }
 
-.hero-calculator .hero-calculator-track::before,
-.hero-calculator .hero-calculator-track::after {
-  content: '';
-  pointer-events: none;
+/* source: ._rail_n76cl_33 */
+.hero-calculator .hero-calculator-rail {
   background-color: var(--rs-inactive);
-  background-repeat: no-repeat;
-  background-size: 4px 4px;
-  background-image: radial-gradient(circle closest-side, var(--brand-teal) 98%, transparent);
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.hero-calculator .hero-calculator-track::before {
+.hero-calculator .hero-calculator-rail[data-side="start"] {
   left: 0;
   width: max(0px, calc(var(--lo, 0) * 1% - var(--rs-gap)));
-  border-radius: 999px 4px 4px 999px;
-  background-position: 4px 50%;
+  border-radius: var(--m-radius-pill) var(--m-radius-sm) var(--m-radius-sm) var(--m-radius-pill);
 }
 
-.hero-calculator .hero-calculator-track::after {
+.hero-calculator .hero-calculator-rail[data-side="end"] {
   left: calc(var(--hi, 100) * 1% + var(--rs-gap));
   right: 0;
-  border-radius: 4px 999px 999px 4px;
-  background-position: calc(100% - 4px) 50%;
+  border-radius: var(--m-radius-sm) var(--m-radius-pill) var(--m-radius-pill) var(--m-radius-sm);
+}
+
+/* end-stop dot (source ._rail_n76cl_33::after) */
+.hero-calculator .hero-calculator-rail::after {
+  content: "";
+  inline-size: var(--m-space-1);
+  block-size: var(--m-space-1);
+  border-radius: var(--m-radius-pill);
+  background-color: var(--m-color-selection-default);
+  position: absolute;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+}
+
+.hero-calculator .hero-calculator-rail[data-side="start"]::after {
+  inset-inline-start: var(--rs-stop-inset);
+}
+
+.hero-calculator .hero-calculator-rail[data-side="end"]::after {
+  inset-inline-end: var(--rs-stop-inset);
 }
 
 .hero-calculator .hero-calculator-band {
@@ -413,100 +444,111 @@ main .hero-calculator a.hero-calculator-cta:focus-visible {
 }
 
 /*
- * two overlaid native range inputs; only their thumbs take pointer input.
- * Each input overhangs the track by half a thumb so the handle centre sits at --lo/--hi.
+ * Handles, ported from the source ._thumb_n76cl_90 rules: a 24x40 hit box whose ::before is the
+ * visible 4px pill bar; on hover, keyboard focus and drag the bar widens to 8px with a 2px
+ * light-teal ring, and keyboard focus adds the grey square ring (._ring_oc6e6_5).
+ * Two overlaid native range inputs sit on top, invisible: only their thumbs take pointer input,
+ * and they carry the keyboard and screen-reader semantics. Each input overhangs the track by half
+ * a hit box so the thumb centre sits at --lo/--hi.
  */
+.hero-calculator .hero-calculator-handle {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: calc(var(--at, 0) * 1%);
+  box-sizing: border-box;
+  inline-size: var(--rs-hit);
+  block-size: var(--rs-handle);
+  border-radius: var(--m-radius-sm);
+  outline: var(--m-focus-ring-width) solid transparent;
+  outline-offset: var(--m-focus-ring-offset);
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+.hero-calculator .hero-calculator-handle::before {
+  content: "";
+  inline-size: var(--m-border-width-heavy);
+  border-radius: var(--m-radius-pill);
+  background-color: var(--m-color-selection-default);
+  transition-property: inline-size;
+  transition-duration: var(--m-duration-fast);
+  transition-timing-function: var(--m-easing-standard);
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  translate: -50%;
+}
+
+.hero-calculator .hero-calculator-handle:not([data-disabled]):is([data-hovered], [data-focus-visible], [data-dragging])::before {
+  inline-size: var(--m-space-2);
+  box-shadow: 0 0 0 var(--m-border-width-medium) var(--m-color-selection-container);
+}
+
+.hero-calculator .hero-calculator-handle[data-focus-visible] {
+  outline-color: var(--m-focus-ring-color);
+}
+
 .hero-calculator .hero-calculator-thumb {
   position: absolute;
   top: 0;
-  left: -12px;
-  width: calc(100% + 24px);
-  height: 40px;
+  left: calc(var(--rs-hit) / -2);
+  width: calc(100% + var(--rs-hit));
+  height: var(--rs-handle);
   margin: 0;
   padding: 0;
   background: none;
+  opacity: 0;
   pointer-events: none;
   appearance: none;
-}
-
-.hero-calculator .hero-calculator-thumb::-webkit-slider-runnable-track {
-  height: 40px;
-  background: none;
-}
-
-.hero-calculator .hero-calculator-thumb::-moz-range-track {
-  height: 40px;
-  background: none;
-}
-
-/* 24px hit area, 4px teal handle (transparent side borders) */
-.hero-calculator .hero-calculator-thumb::-webkit-slider-thumb {
-  box-sizing: border-box;
-  width: 24px;
-  height: 40px;
-  border: solid transparent;
-  border-width: 0 10px;
-  border-radius: 999px;
-  background-color: var(--brand-teal);
-  background-clip: content-box;
-  pointer-events: auto;
-  cursor: ew-resize;
-  appearance: none;
-  transition: border-width var(--duration-fast) var(--ease-standard);
-}
-
-.hero-calculator .hero-calculator-thumb::-moz-range-thumb {
-  box-sizing: border-box;
-  width: 24px;
-  height: 40px;
-  border: solid transparent;
-  border-width: 0 10px;
-  border-radius: 999px;
-  background-color: var(--brand-teal);
-  background-clip: content-box;
-  pointer-events: auto;
-  cursor: ew-resize;
-  transition: border-width var(--duration-fast) var(--ease-standard);
-}
-
-.hero-calculator .hero-calculator-thumb:hover::-webkit-slider-thumb,
-.hero-calculator .hero-calculator-thumb:active::-webkit-slider-thumb,
-.hero-calculator .hero-calculator-thumb:focus-visible::-webkit-slider-thumb {
-  border-width: 0 8px;
-}
-
-.hero-calculator .hero-calculator-thumb:hover::-moz-range-thumb,
-.hero-calculator .hero-calculator-thumb:active::-moz-range-thumb,
-.hero-calculator .hero-calculator-thumb:focus-visible::-moz-range-thumb {
-  border-width: 0 8px;
 }
 
 .hero-calculator .hero-calculator-thumb:focus-visible {
   outline: none;
 }
 
-/*
- * keyboard focus ring (source thumb: 2px #85858e outline, 4px offset, 4px radius around the
- * 24x40 hit box). Drawn by the handle's bubble, which is already centred on it, so the ring
- * keeps square corners while the teal bar stays a pill; not shown while dragging.
- */
-.hero-calculator .hero-calculator-bubble::after {
-  content: '';
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 50%;
-  box-sizing: border-box;
-  width: 36px;
-  height: 52px;
-  border: 2px solid var(--border-color);
-  border-radius: 10px;
-  translate: -50% 0;
-  visibility: hidden;
+.hero-calculator .hero-calculator-thumb::-webkit-slider-runnable-track {
+  height: var(--rs-handle);
+  background: none;
 }
 
-.hero-calculator .hero-calculator-thumb-min:focus-visible ~ .hero-calculator-bubble-min::after,
-.hero-calculator .hero-calculator-thumb-max:focus-visible ~ .hero-calculator-bubble-max::after {
-  visibility: visible;
+.hero-calculator .hero-calculator-thumb::-moz-range-track {
+  height: var(--rs-handle);
+  background: none;
+}
+
+.hero-calculator .hero-calculator-thumb::-webkit-slider-thumb {
+  width: var(--rs-hit);
+  height: var(--rs-handle);
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  cursor: ew-resize;
+  appearance: none;
+}
+
+.hero-calculator .hero-calculator-thumb::-moz-range-thumb {
+  width: var(--rs-hit);
+  height: var(--rs-handle);
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  cursor: ew-resize;
+}
+
+.hero-calculator .hero-calculator-thumb[data-dragging]::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+.hero-calculator .hero-calculator-thumb[data-dragging]::-moz-range-thumb {
+  cursor: grabbing;
+}
+
+/* touch: larger handles (source: crossing ranges on coarse pointers) */
+@media (pointer: coarse) {
+  .hero-calculator .hero-calculator-track {
+    --rs-handle: 44px;
+    --rs-hit: 44px;
+  }
 }
 
 /* value bubble 8px above a handle while it is dragged or keyboard-focused */
@@ -517,7 +559,7 @@ main .hero-calculator a.hero-calculator-cta:focus-visible {
   z-index: 1;
   box-sizing: border-box;
   padding: 4px 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #b2b2bb;
   border-radius: 4px;
   background-color: var(--background-color);
   color: var(--text-color);
@@ -664,8 +706,7 @@ main .hero-calculator .hero-calculator-action a:active {
   .hero-calculator .hero-calculator-lattice canvas,
   .hero-calculator .hero-calculator-bars span::after,
   main .hero-calculator .hero-calculator-action a:any-link::after,
-  .hero-calculator .hero-calculator-thumb::-webkit-slider-thumb,
-  .hero-calculator .hero-calculator-thumb::-moz-range-thumb,
+  .hero-calculator .hero-calculator-handle::before,
   .hero-calculator .hero-calculator-bubble,
   .hero-calculator .hero-calculator-text > .hero-calculator-tip,
   main .hero-calculator a.hero-calculator-tip-link svg {

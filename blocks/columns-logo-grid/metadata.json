@@ -1,0 +1,30 @@
+{
+  "variantName": "columns-logo-grid",
+  "baseBlock": "columns",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "leftCell": "H2 'Connect InsureShield to the platforms you already ship with' + paragraph",
+    "rightCell": "label 'Integrations' + 5 logos (Shopify, ShipStation, Shippo, AfterShip, WooCommerce) in a 3x2 grid of bordered cells",
+    "logoAssets": [
+      "https://www.insureshield.com/assets/insureshield/shopify-m40Qf4lq.svg",
+      "https://www.insureshield.com/assets/insureshield/shipstation-b6mFKFub.svg",
+      "https://www.insureshield.com/assets/insureshield/shippo-D6PlM04S.svg",
+      "https://www.insureshield.com/assets/insureshield/aftership-duFfXxE8.svg"
+    ]
+  },
+  "contentPattern": {
+    "rows": [
+      [
+        "H2 + paragraph",
+        "'Integrations' label + logo images"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "columns-logo-grid"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Bordered two-part panel: intro heading + paragraph beside a grid of partner/integration logos with a label cell.",
+  "reuseGuidance": "Use for integrations or partner logos. The column with the most images becomes the logo grid; its text becomes the first grid cell."
+}

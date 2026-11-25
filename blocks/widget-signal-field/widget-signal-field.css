@@ -1,0 +1,55 @@
+.widget-signal-field {
+  position: relative;
+  pointer-events: none;
+}
+
+/* moved into the following section: fills it, behind its content, no own height */
+.widget-signal-field.widget-signal-field-placed {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent, #000 96px, #000 calc(100% - 96px), transparent);
+}
+
+/* the source pattern band adds 64px above the section padding of its first section */
+main > .section.widget-signal-field-band > .widget-signal-field-placed + div {
+  margin-top: 64px;
+}
+
+/*
+ * content panels in the band stay opaque, as in source, so the dots and signals
+ * never run through them (the integrations panel is white there)
+ */
+.widget-signal-field-band .columns-logo-grid .columns-logo-grid-row {
+  background-color: var(--background-color, #fff);
+}
+
+/* no following section: stand-alone band */
+.widget-signal-field.widget-signal-field-inline {
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.widget-signal-field .widget-signal-field-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+.widget-signal-field .widget-signal-field-canvas[data-live='true'] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .widget-signal-field .widget-signal-field-canvas {
+    transition: none;
+  }
+}

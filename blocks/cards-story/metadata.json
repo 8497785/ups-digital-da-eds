@@ -1,0 +1,24 @@
+{
+  "variantName": "cards-story",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "media": "384x216 photos on top",
+    "body": "eyebrow (Customer story / Article), title, description, 'Read the story' or 'Read the article' link"
+  },
+  "contentPattern": {
+    "rows": [
+      [
+        "photo",
+        "eyebrow, title, description, link"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "cards-story"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Resource/story cards: photo on top, eyebrow (content type), title, description and a \"Read the story\" link; the whole card is clickable.",
+  "reuseGuidance": "Use for customer stories and articles. With 3+ text elements, the first is the eyebrow and the second the title (or use a heading for the title)."
+}

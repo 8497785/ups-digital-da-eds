@@ -1,0 +1,11 @@
+{
+  "type": "da",
+  "sites": {
+    "ups-digital-da-eds": {
+      "previewOrg": "8497785",
+      "previewSite": "ups-digital-da-eds",
+      "contentHostUrl": "https://content.da.live/8497785/ups-digital-da-eds/",
+      "libraryUrl": "https://main--sta-boilerplate--aemdemos.aem.page/tools/sidekick/library.json"
+    }
+  }
+}

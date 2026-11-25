@@ -1,0 +1,212 @@
+/* table-comparison: values from source computed styles (insureshield.com shipping-insurance #difference) */
+
+/* mobile (base): topic row spans both columns, labels visible, only the first header shown */
+.table-comparison {
+  width: 100%;
+  color: var(--text-color);
+  font-size: var(--body-font-size-m);
+  line-height: 20px;
+}
+
+.table-comparison table {
+  display: block;
+  width: 100%;
+  font-size: inherit;
+  line-height: inherit;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-top: 1px solid #b2b2bb;
+  border-left: 1px solid #b2b2bb;
+  box-sizing: border-box;
+}
+
+.table-comparison thead,
+.table-comparison tbody {
+  display: block;
+}
+
+.table-comparison tr {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  position: relative;
+}
+
+.table-comparison th,
+.table-comparison td {
+  display: flex;
+  margin: 0;
+  text-align: start;
+  background-color: var(--background-color);
+  border-bottom: 1px solid #b2b2bb;
+  border-right: 1px solid #b2b2bb;
+  box-sizing: border-box;
+}
+
+.table-comparison th p,
+.table-comparison td p {
+  margin: 0;
+}
+
+/* topic (row header) cell: 72px icon beside the label */
+.table-comparison tbody th {
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  font-size: var(--body-font-size-m);
+  font-weight: 500;
+  line-height: 24px;
+}
+
+/* header row */
+.table-comparison thead th {
+  align-items: flex-end;
+  padding: 24px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.table-comparison thead th:first-child {
+  grid-column: 1 / -1;
+}
+
+.table-comparison thead th:not(:first-child) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.table-comparison thead .table-comparison-highlight {
+  background-color: var(--brand-teal);
+  color: var(--background-color);
+}
+
+.table-comparison .table-comparison-icon {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+}
+
+.table-comparison .table-comparison-icon picture,
+.table-comparison .table-comparison-icon img,
+.table-comparison .table-comparison-icon svg,
+.table-comparison svg.table-comparison-icon {
+  display: block;
+  width: 72px;
+  height: 72px;
+}
+
+/* value cells */
+.table-comparison tbody td {
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  font-weight: 400;
+}
+
+.table-comparison .table-comparison-answer {
+  color: var(--text-muted-color);
+}
+
+.table-comparison .table-comparison-answer p + p {
+  margin-top: 8px;
+}
+
+.table-comparison tbody .table-comparison-highlight {
+  background-color: #f3f9f9;
+}
+
+.table-comparison tbody .table-comparison-highlight .table-comparison-answer {
+  position: relative;
+  padding-left: 28px;
+  color: var(--text-color);
+}
+
+.table-comparison tbody .table-comparison-highlight .table-comparison-answer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background-color: var(--brand-teal);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m421-389-98-98q-9-9-22-9t-23 10q-9 9-9 22t9 22l122 123q9 9 21 9t21-9l239-239q10-10 10-23t-10-23q-10-9-23.5-8.5T635-603L421-389Zm59 309q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* per-cell column label (source mobile tag): shown on mobile only */
+.table-comparison .table-comparison-label {
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--text-color);
+}
+
+/* source md: desktop type and cell padding, still the stacked (mobile) row layout */
+@media (width >= 768px) {
+  .table-comparison {
+    line-height: 24px;
+  }
+
+  .table-comparison tbody th {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .table-comparison thead th {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .table-comparison tbody td {
+    padding: 24px;
+  }
+
+  .table-comparison .table-comparison-label {
+    font-size: var(--body-font-size-s);
+  }
+}
+
+/* source lg: three-column table */
+@media (width >= 1024px) {
+  .table-comparison tr {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .table-comparison tbody th {
+    grid-column: auto;
+  }
+
+  .table-comparison thead th:first-child {
+    grid-column: auto;
+  }
+
+  .table-comparison thead th:not(:first-child) {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 24px;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    border-bottom: 1px solid #b2b2bb;
+    border-right: 1px solid #b2b2bb;
+  }
+
+  /* label stays available to assistive tech, visually hidden on desktop */
+  .table-comparison .table-comparison-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}

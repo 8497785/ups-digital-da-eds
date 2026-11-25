@@ -1,0 +1,48 @@
+{
+  "variantName": "quote-drawer",
+  "baseBlock": "quote-drawer",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "layout": "Fixed pill dock at the bottom right (teal, shield icon, label, pulsing dot) that opens a 480px full-height side sheet on the right (full width on phones): header (title, round bordered Back/Close), scrolling body, footer that follows short content",
+    "animation": {
+      "selector": "aside.m-dock-0pqo-G (dock), div.m-sheetOverlay-sVRLB9 > div.m-modal-2sZkF4.m-sheet-7FP-Ve[data-size=side] > section[role=dialog] (sheet), div.m-illustration-iXIyDh[data-construct] > svg (tile art)",
+      "elementType": "DOM + inline SVG (procedural isometric renderer in the source bundle)",
+      "dataAttributes": "dock: data-visible, data-motion; sheet: data-step=form|recommend|sales; art: data-construct=building|resolved",
+      "dependsOn": [
+        "https://www.insureshield.com/assets/insureshield/QuoteDrawer-IDD6-v3F.js",
+        "https://www.insureshield.com/assets/insureshield/QuoteDrawer-Cnc4vrQp.css",
+        "https://www.insureshield.com/assets/insureshield/index-UfCqhPTV.js"
+      ],
+      "externalAssets": "Illustrations exported from the source renderer to /assets/shipping-insurance/quote/*.svg (carriers, shield-alone, parcel-shield, freight, luxury-goods, merchants-protected, coverage-shield, coverage-unsure, product-shipping-insurance, product-parcelpro, email-verify, logo-insureshield, logo-parcel-pro)",
+      "depicts": "Isometric teal/grey objects per choice (planes and trucks, shields, parcels, freight pallets, luxury case, storefront, safe, envelope)",
+      "howItAnimates": "Dock fades and rises 16px in (200ms) once scrolled past 60% of the hero, pulse ping 1.28s infinite. Sheet slides in from the right (320ms enter easing), backdrop fades to 50% #363230. Later questions reveal (0fr to 1fr, 320ms). Each illustration constructs over 900ms when 30% visible: items pop in staggered, colour fills up from a ghost palette, emblems draw, dashed guides fade in and out. Checkbox fill wipe + tick draw, radio ring thickens",
+      "dimensions": "sheet 480 x 100dvh; tile art 100% x 72px (96 x 64 in single-column rows on phones); offer art 144 x 120; sales art 100% x 120",
+      "migrationNote": "The sheet is not in the scraped DOM (rendered on demand). The parser reads the dock label and emits the drawer content from constants captured from the live source"
+    },
+    "interactive": "Listbox select, two dual-thumb range sliders (crossing handles, draggable band), radio/checkbox tiles, other-provider field, live monthly estimate, recommendation routing (Connect, Complete, for UPS, Parcel Pro), sign-up hand-off URL, talk-to-sales form with validation (sends to the contact page here)"
+  },
+  "contentPattern": {
+    "surroundingText": "Own last section; no visible content in the page flow",
+    "rows": [
+      ["Dock", "Quote monthly cost"],
+      ["Title", "Build a quote"],
+      ["Country", "question", "countries list (first = served)"],
+      ["Package value | Shipments", "label", "Stops / Default / Format / Open ended / Help list"],
+      ["Solution | Shipment types | Carriers | Coverage", "question", "Description and extra labels list"],
+      ["Option", "value id", "image", "label", "detail"],
+      ["Estimate", "label", "Note / Low rate / High rate list"],
+      ["Buttons", "labels list"],
+      ["Recommendation", "title", "labels list"],
+      ["Product", "id", "art + logo images", "name", "points list", "Rates / Brand / Link list"],
+      ["Reasons", "reason list"],
+      ["Sales", "title", "image + lead", "field labels, errors, Send, Privacy, Contact page"]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "quote-drawer"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Persistent quote entry point: floating dock plus a multi-step quote side sheet, also opened by the hero calculator CTAs.",
+  "reuseGuidance": "Use once per page, in the last section. Other blocks open it with the cancelable document event 'quote-drawer:open' (detail: entry 'estimate' or 'sales', values [min, max]). Option and product ids drive the recommendation rules; labels, images and links are authored."
+}

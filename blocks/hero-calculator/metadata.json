@@ -1,0 +1,40 @@
+{
+  "variantName": "hero-calculator",
+  "baseBlock": "hero",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "layout": "2 columns: text on the left (about 50%), elevated calculator card on the right; the lattice canvas fills the band behind both",
+    "animation": {
+      "selector": "#hero-section > section.m-hero-RZrYvQ > div.m-root-shKdUH.m-fill-wlwRr7[data-pattern='lattice'] > div.m-host--uqlRe > canvas.m-canvas-wTEIQi",
+      "elementType": "canvas, 2D context (not WebGL/three.js)",
+      "dataAttributes": "container: data-pattern=\"lattice\" aria-hidden=\"true\"; canvas: data-live=\"true\" (CSS keeps the canvas at opacity 0 until data-live=true)",
+      "dependsOn": [
+        "https://www.insureshield.com/assets/insureshield/index-UfCqhPTV.js",
+        "https://www.insureshield.com/assets/insureshield/index-CDx1CeDI.css"
+      ],
+      "externalAssets": "none (drawn procedurally)",
+      "depicts": "Isometric lattice of light grey lines and nodes, densest at the right behind the calculator",
+      "howItAnimates": "Drawn and faded in on load (data-live). No change seen at rest or on pointer move: static after the intro. pointer-events:none",
+      "dimensions": "full band, 1280x631 CSS px at a 1280px viewport (position absolute, inset 0)",
+      "migrationNote": "The canvas is empty in cleaned.html. The block JS draws the lattice into a canvas (or inline SVG), with a static pattern for reduced motion"
+    },
+    "interactive": "Two-handle range slider over a histogram of package values (handles can pass; drag the band; arrows, PageUp/PageDown, Home/End). It updates 'Estimated premium per package' live, and the CTA opens the quote drawer (QuoteDrawer-IDD6-v3F.js)"
+  },
+  "contentPattern": {
+    "surroundingText": "H1 'Shipping insurance for lost, damaged, or stolen shipments' (the last two lines are teal and underlined); paragraph 'InsureShield® Shipping Insurance helps businesses recover faster...'; button 'Talk to an expert'",
+    "calculatorText": "H3 'What's your average package value?'; label 'Package value'; default range $100 to $1,000; 'Estimated premium per package' $0.80 to $10.50; CTA 'Estimate monthly premium'; disclaimer 'Estimate only. Actual pricing and availability depend on...'",
+    "rows": [
+      [
+        "Text: H1 (emphasis in <em>), paragraph, CTA link",
+        "Calculator: H3 question, list of config (min $100, max $1,000, default range), result label, CTA link, disclaimer"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "hero-calculator"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Top-of-page hero: headline, intro and CTA beside an interactive premium calculator, over a procedurally drawn isometric lattice background.",
+  "reuseGuidance": "Use for a product hero that pairs marketing copy with an estimate tool. Calculator config is authored as \"key: value\" list items (Label, Min, Max, Stops, Low rate, High rate, Bars, Open ended). Without a second cell it renders a text-only hero over the lattice."
+}

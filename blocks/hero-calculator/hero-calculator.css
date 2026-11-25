@@ -1,0 +1,769 @@
+/*
+ * hero-calculator
+ * Values from the source hero (insureshield.com shipping-insurance, m-hero / calculator):
+ * full-bleed band, 1248px inner grid, lattice canvas behind, raised calculator card.
+ */
+
+/* the source hero band has no section padding and spans the full width */
+main > .section.hero-calculator-container {
+  padding: 0;
+}
+
+main > .section.hero-calculator-container > .hero-calculator-wrapper {
+  max-width: none;
+  padding: 0;
+}
+
+.hero-calculator {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 20px;
+}
+
+/* lattice canvas fills the band behind the content */
+.hero-calculator .hero-calculator-lattice {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-calculator .hero-calculator-lattice canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms ease-out;
+}
+
+.hero-calculator .hero-calculator-lattice canvas[data-live='true'] {
+  opacity: 1;
+}
+
+.hero-calculator .hero-calculator-inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+/* ---------- text column ---------- */
+.hero-calculator .hero-calculator-text > * {
+  margin: 0;
+}
+
+.hero-calculator .hero-calculator-text h1 {
+  margin: 0 0 24px;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 36px;
+  letter-spacing: normal;
+  color: var(--text-color);
+  text-wrap: balance;
+}
+
+.hero-calculator .hero-calculator-text h1 .hero-calculator-line {
+  display: block;
+}
+
+.hero-calculator .hero-calculator-text h1 em,
+.hero-calculator .hero-calculator-text h1 i,
+.hero-calculator .hero-calculator-text h1 .hero-calculator-accent {
+  font-style: normal;
+  color: var(--brand-teal);
+}
+
+.hero-calculator .hero-calculator-text h1 em,
+.hero-calculator .hero-calculator-text h1 i {
+  text-decoration: underline 2px dotted;
+  text-decoration-color: var(--brand-teal);
+  text-underline-offset: 4px;
+}
+
+/* accent words with a definition: inline buttons (source m-term) */
+.hero-calculator .hero-calculator-text h1 em.hero-calculator-defined {
+  text-decoration: none;
+}
+
+.hero-calculator .hero-calculator-text h1 .hero-calculator-define {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  text-decoration: underline dotted 2px;
+  text-decoration-color: currentcolor;
+  text-underline-offset: 4px;
+  cursor: help;
+  outline: 2px solid transparent;
+  outline-offset: 4px;
+}
+
+.hero-calculator .hero-calculator-text h1 .hero-calculator-define:hover,
+.hero-calculator .hero-calculator-text h1 .hero-calculator-define[aria-expanded='true'] {
+  text-decoration-style: solid;
+}
+
+.hero-calculator .hero-calculator-text h1 .hero-calculator-define:focus-visible {
+  outline-color: #85858e;
+}
+
+.hero-calculator .hero-calculator-text.hero-calculator-has-terms {
+  position: relative;
+}
+
+/* definition popover: raised square card below the word, fades and drops 4px in */
+.hero-calculator .hero-calculator-text > .hero-calculator-tip {
+  position: absolute;
+  z-index: 3;
+  box-sizing: border-box;
+  max-inline-size: min(40ch, calc(100vw - 32px));
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 4%), 0 2px 6px 0 rgb(0 0 0 / 6%);
+  color: var(--text-color);
+  font-size: var(--body-font-size-s);
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: normal;
+  text-align: start;
+  opacity: 0;
+  translate: 0 -4px;
+  outline: none;
+  transition: opacity var(--duration-fast) var(--ease-standard), translate var(--duration-fast) var(--ease-standard);
+}
+
+/* small screens: the card spans the viewport less a 16px margin each side (source) */
+@media (width < 768px) {
+  .hero-calculator .hero-calculator-text > .hero-calculator-tip {
+    inline-size: calc(100vw - 32px);
+    max-inline-size: none;
+  }
+}
+
+.hero-calculator .hero-calculator-text > .hero-calculator-tip[data-open] {
+  opacity: 1;
+  translate: 0;
+}
+
+.hero-calculator .hero-calculator-text > .hero-calculator-tip[hidden] {
+  display: none;
+}
+
+.hero-calculator .hero-calculator-tip-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-inline-size: 32ch;
+}
+
+.hero-calculator .hero-calculator-text .hero-calculator-tip-copy {
+  max-width: none;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+/* "Get coverage": small tertiary button, underline and arrow nudge on hover */
+main .hero-calculator a.hero-calculator-tip-link:any-link {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 8px 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--link-color);
+  font-size: var(--body-font-size-s);
+  font-weight: 500;
+  line-height: 20px;
+  text-decoration: underline 1px transparent;
+  text-underline-offset: 4px;
+  transition: color var(--duration-fast) var(--ease-standard), text-decoration-color var(--duration-fast) var(--ease-standard);
+}
+
+main .hero-calculator a.hero-calculator-tip-link:hover {
+  color: var(--link-hover-color);
+  text-decoration-color: currentcolor;
+}
+
+main .hero-calculator a.hero-calculator-tip-link svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: currentcolor;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+main .hero-calculator a.hero-calculator-tip-link:hover svg,
+main .hero-calculator a.hero-calculator-tip-link:focus-visible svg {
+  transform: translateX(2px);
+}
+
+.hero-calculator .hero-calculator-text p:not(.hero-calculator-actions, .hero-calculator-tip-copy) {
+  max-width: 42ch;
+  margin: 0 0 32px;
+  font-size: var(--body-font-size-m);
+  line-height: var(--body-line-height);
+  color: var(--text-muted-color);
+}
+
+.hero-calculator .hero-calculator-text p.hero-calculator-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.hero-calculator .hero-calculator-text p.hero-calculator-actions + p.hero-calculator-actions {
+  margin-top: 12px;
+}
+
+/* outlined pill: "Talk to an expert" */
+main .hero-calculator a.hero-calculator-cta:any-link {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--text-color);
+  font-size: var(--body-font-size-m);
+  font-weight: 500;
+  line-height: 20px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), scale var(--duration-fast) var(--ease-standard);
+}
+
+main .hero-calculator a.hero-calculator-cta:hover,
+main .hero-calculator a.hero-calculator-cta:focus-visible {
+  border-color: var(--text-color);
+  background-color: var(--light-color);
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+/* ---------- calculator card ---------- */
+.hero-calculator .hero-calculator-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 672px;
+  padding: 32px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 6%), 0 4px 8px 0 rgb(0 0 0 / 8%);
+}
+
+.hero-calculator .hero-calculator-card > *,
+.hero-calculator .hero-calculator-outcome > *,
+.hero-calculator .hero-calculator-result > * {
+  margin: 0;
+}
+
+.hero-calculator .hero-calculator-title {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: normal;
+  color: var(--text-color);
+  text-wrap: balance;
+}
+
+.hero-calculator .hero-calculator-term {
+  display: flex;
+  flex-direction: column;
+}
+
+/* histogram of package values above the slider */
+.hero-calculator .hero-calculator-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 64px;
+  margin: 0 0 8px;
+}
+
+.hero-calculator .hero-calculator-bars span {
+  position: relative;
+  flex: 1 1 0%;
+  height: calc(var(--bar, 0.5) * 100%);
+  min-height: 2px;
+  overflow: hidden;
+  background-color: #e7f2f2;
+}
+
+.hero-calculator .hero-calculator-bars span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--brand-teal);
+  translate: 0 calc(100% + 1px);
+  transition: translate 200ms var(--ease-standard);
+  transition-delay: calc(100ms * var(--i, 0) / 16);
+}
+
+.hero-calculator .hero-calculator-bars span.is-selected::after {
+  translate: 0;
+}
+
+.hero-calculator .hero-calculator-slider-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 4px 12px;
+  margin: 0 0 8px;
+}
+
+/* the source keeps the slider label for assistive tech only */
+.hero-calculator .hero-calculator-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.hero-calculator .hero-calculator-readout {
+  font-size: var(--body-font-size-m);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 20px;
+}
+
+/*
+ * track: 16px rails and band with an 8px gap around each 4px handle.
+ * JS sets --lo/--hi (0-100) on the track.
+ */
+.hero-calculator .hero-calculator-track {
+  --rs-gap: 8px;
+  --rs-inactive: #e7f2f2;
+
+  position: relative;
+  height: 40px;
+}
+
+.hero-calculator .hero-calculator-track::before,
+.hero-calculator .hero-calculator-track::after,
+.hero-calculator .hero-calculator-band {
+  position: absolute;
+  top: 50%;
+  height: 16px;
+  translate: 0 -50%;
+}
+
+.hero-calculator .hero-calculator-track::before,
+.hero-calculator .hero-calculator-track::after {
+  content: '';
+  pointer-events: none;
+  background-color: var(--rs-inactive);
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  background-image: radial-gradient(circle closest-side, var(--brand-teal) 98%, transparent);
+}
+
+.hero-calculator .hero-calculator-track::before {
+  left: 0;
+  width: max(0px, calc(var(--lo, 0) * 1% - var(--rs-gap)));
+  border-radius: 999px 4px 4px 999px;
+  background-position: 4px 50%;
+}
+
+.hero-calculator .hero-calculator-track::after {
+  left: calc(var(--hi, 100) * 1% + var(--rs-gap));
+  right: 0;
+  border-radius: 4px 999px 999px 4px;
+  background-position: calc(100% - 4px) 50%;
+}
+
+.hero-calculator .hero-calculator-band {
+  left: calc(var(--lo, 0) * 1% + var(--rs-gap));
+  width: max(0px, calc((var(--hi, 100) - var(--lo, 0)) * 1% - var(--rs-gap) * 2));
+  border-radius: 4px;
+  background-color: var(--brand-teal);
+  cursor: grab;
+  touch-action: none;
+}
+
+/*
+ * two overlaid native range inputs; only their thumbs take pointer input.
+ * Each input overhangs the track by half a thumb so the handle centre sits at --lo/--hi.
+ */
+.hero-calculator .hero-calculator-thumb {
+  position: absolute;
+  top: 0;
+  left: -12px;
+  width: calc(100% + 24px);
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+}
+
+.hero-calculator .hero-calculator-thumb::-webkit-slider-runnable-track {
+  height: 40px;
+  background: none;
+}
+
+.hero-calculator .hero-calculator-thumb::-moz-range-track {
+  height: 40px;
+  background: none;
+}
+
+/* 24px hit area, 4px teal handle (transparent side borders) */
+.hero-calculator .hero-calculator-thumb::-webkit-slider-thumb {
+  box-sizing: border-box;
+  width: 24px;
+  height: 40px;
+  border: solid transparent;
+  border-width: 0 10px;
+  border-radius: 999px;
+  background-color: var(--brand-teal);
+  background-clip: content-box;
+  pointer-events: auto;
+  cursor: ew-resize;
+  appearance: none;
+  transition: border-width var(--duration-fast) var(--ease-standard);
+}
+
+.hero-calculator .hero-calculator-thumb::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 24px;
+  height: 40px;
+  border: solid transparent;
+  border-width: 0 10px;
+  border-radius: 999px;
+  background-color: var(--brand-teal);
+  background-clip: content-box;
+  pointer-events: auto;
+  cursor: ew-resize;
+  transition: border-width var(--duration-fast) var(--ease-standard);
+}
+
+.hero-calculator .hero-calculator-thumb:hover::-webkit-slider-thumb,
+.hero-calculator .hero-calculator-thumb:active::-webkit-slider-thumb,
+.hero-calculator .hero-calculator-thumb:focus-visible::-webkit-slider-thumb {
+  border-width: 0 8px;
+}
+
+.hero-calculator .hero-calculator-thumb:hover::-moz-range-thumb,
+.hero-calculator .hero-calculator-thumb:active::-moz-range-thumb,
+.hero-calculator .hero-calculator-thumb:focus-visible::-moz-range-thumb {
+  border-width: 0 8px;
+}
+
+.hero-calculator .hero-calculator-thumb:focus-visible {
+  outline: none;
+}
+
+/*
+ * keyboard focus ring (source thumb: 2px #85858e outline, 4px offset, 4px radius around the
+ * 24x40 hit box). Drawn by the handle's bubble, which is already centred on it, so the ring
+ * keeps square corners while the teal bar stays a pill; not shown while dragging.
+ */
+.hero-calculator .hero-calculator-bubble::after {
+  content: '';
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  box-sizing: border-box;
+  width: 36px;
+  height: 52px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  translate: -50% 0;
+  visibility: hidden;
+}
+
+.hero-calculator .hero-calculator-thumb-min:focus-visible ~ .hero-calculator-bubble-min::after,
+.hero-calculator .hero-calculator-thumb-max:focus-visible ~ .hero-calculator-bubble-max::after {
+  visibility: visible;
+}
+
+/* value bubble 8px above a handle while it is dragged or keyboard-focused */
+.hero-calculator .hero-calculator-bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: calc(var(--at, 0) * 1%);
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: var(--body-font-size-xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+  translate: -50% 0;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.hero-calculator .hero-calculator-thumb-min:is(:active, :focus-visible) ~ .hero-calculator-bubble-min,
+.hero-calculator .hero-calculator-thumb-max:is(:active, :focus-visible) ~ .hero-calculator-bubble-max {
+  opacity: 1;
+}
+
+/* ---------- outcome ---------- */
+.hero-calculator .hero-calculator-outcome {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* term and outcome sit 16px apart inside the 24px card rhythm */
+.hero-calculator .hero-calculator-term + .hero-calculator-outcome {
+  margin-top: -8px;
+}
+
+.hero-calculator .hero-calculator-result {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.hero-calculator .hero-calculator-result-label {
+  font-size: var(--body-font-size-m);
+  line-height: 20px;
+  color: var(--text-muted-color);
+}
+
+/* reserve the widest figure so the card does not jump while sliding */
+.hero-calculator .hero-calculator-figure {
+  display: grid;
+  font-size: 20px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 28px;
+}
+
+.hero-calculator .hero-calculator-figure > span {
+  grid-area: 1 / 1;
+}
+
+.hero-calculator .hero-calculator-figure-reserve {
+  visibility: hidden;
+}
+
+/* teal pill: "Estimate monthly premium" with a trailing arrow */
+main .hero-calculator .hero-calculator-action a:any-link {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background-color: var(--brand-teal);
+  color: #fff;
+  font-size: var(--body-font-size-m);
+  font-weight: 500;
+  line-height: 20px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--duration-fast) var(--ease-standard), scale var(--duration-fast) var(--ease-standard);
+}
+
+main .hero-calculator .hero-calculator-action a:any-link::after {
+  content: '';
+  flex: none;
+  width: 20px;
+  height: 20px;
+  background-color: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M686-450H190q-13 0-21.5-8.5T160-480q0-13 8.5-21.5T190-510h496L459-737q-9-9-9-21t9-21q9-9 21-9t21 9l278 278q5 5 7 10t2 11q0 6-2 11t-7 10L501-181q-9 9-21 9t-21-9q-9-9-9-21t9-21l227-227Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: translate 200ms var(--ease-standard);
+}
+
+main .hero-calculator .hero-calculator-action a:hover,
+main .hero-calculator .hero-calculator-action a:focus-visible {
+  background-color: var(--brand-teal-hover);
+  color: #fff;
+  text-decoration: none;
+}
+
+main .hero-calculator .hero-calculator-action a:hover::after,
+main .hero-calculator .hero-calculator-action a:focus-visible::after {
+  translate: 2px 0;
+}
+
+main .hero-calculator a.hero-calculator-cta:active,
+main .hero-calculator .hero-calculator-action a:active {
+  scale: 0.98;
+}
+
+.hero-calculator .hero-calculator-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* disclaimer with a leading info icon above a hairline */
+.hero-calculator .hero-calculator-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--border-subtle-color);
+  font-size: var(--body-font-size-m);
+  line-height: 16px;
+  color: var(--text-muted-color);
+}
+
+.hero-calculator .hero-calculator-note::before {
+  content: '';
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  background-color: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M504.5-288.63q8.5-8.62 8.5-21.37v-180q0-12.75-8.68-21.38-8.67-8.62-21.5-8.62-12.82 0-21.32 8.62-8.5 8.63-8.5 21.38v180q0 12.75 8.68 21.37 8.67 8.63 21.5 8.63 12.82 0 21.32-8.63Zm-1-314.57q9.5-9.2 9.5-22.8 0-14.45-9.48-24.22-9.48-9.78-23.5-9.78t-23.52 9.78Q447-640.45 447-626q0 13.6 9.48 22.8 9.48 9.2 23.5 9.2t23.52-9.2ZM480.27-80q-82.74 0-155.5-31.5Q252-143 197.5-197.5t-86-127.34Q80-397.68 80-480.5t31.5-155.66Q143-709 197.5-763t127.34-85.5Q397.68-880 480.5-880t155.66 31.5Q709-817 763-763t85.5 127Q880-563 880-480.27q0 82.74-31.5 155.5Q817-252 763-197.68q-54 54.31-127 86Q563-80 480.27-80Zm.23-60Q622-140 721-239.5t99-241Q820-622 721.19-721T480-820q-141 0-240.5 98.81T140-480q0 141 99.5 240.5t241 99.5Zm-.5-340Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-calculator .hero-calculator-lattice canvas,
+  .hero-calculator .hero-calculator-bars span::after,
+  main .hero-calculator .hero-calculator-action a:any-link::after,
+  .hero-calculator .hero-calculator-thumb::-webkit-slider-thumb,
+  .hero-calculator .hero-calculator-thumb::-moz-range-thumb,
+  .hero-calculator .hero-calculator-bubble,
+  .hero-calculator .hero-calculator-text > .hero-calculator-tip,
+  main .hero-calculator a.hero-calculator-tip-link svg {
+    transition: none;
+  }
+
+  .hero-calculator .hero-calculator-text > .hero-calculator-tip {
+    translate: none;
+  }
+
+  main .hero-calculator a.hero-calculator-tip-link:hover svg,
+  main .hero-calculator a.hero-calculator-tip-link:focus-visible svg {
+    transform: none;
+  }
+
+  main .hero-calculator .hero-calculator-action a:hover::after,
+  main .hero-calculator .hero-calculator-action a:focus-visible::after {
+    translate: none;
+  }
+}
+
+/* ---------- tablet and up (source md, 768px): desktop type and spacing, still one column ---------- */
+@media (width >= 768px) {
+  .hero-calculator {
+    line-height: 24px;
+  }
+
+  .hero-calculator .hero-calculator-inner {
+    padding: 64px 32px;
+  }
+
+  .hero-calculator .hero-calculator-text h1 {
+    font-size: 48px;
+    line-height: 56px;
+    letter-spacing: -0.96px;
+  }
+
+  .hero-calculator .hero-calculator-text p:not(.hero-calculator-actions, .hero-calculator-tip-copy) {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .hero-calculator .hero-calculator-text p.hero-calculator-actions {
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  main .hero-calculator a.hero-calculator-cta:any-link {
+    display: inline-flex;
+    line-height: 24px;
+  }
+
+  main .hero-calculator .hero-calculator-action a:any-link {
+    line-height: 24px;
+  }
+
+  .hero-calculator .hero-calculator-title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .hero-calculator .hero-calculator-readout,
+  .hero-calculator .hero-calculator-result-label {
+    font-size: var(--body-font-size-s);
+    line-height: 20px;
+  }
+
+  .hero-calculator .hero-calculator-figure {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .hero-calculator .hero-calculator-note {
+    font-size: var(--body-font-size-xs);
+    line-height: 14px;
+  }
+}
+
+/* ---------- desktop (source lg, 1024px): 12-column grid, text in 1-6, card in 8-12 ---------- */
+@media (width >= 1024px) {
+  .hero-calculator .hero-calculator-inner {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
+  }
+
+  .hero-calculator .hero-calculator-text {
+    grid-column: 1 / span 6;
+    padding: 0 0 0 33px;
+  }
+
+  .hero-calculator .hero-calculator-card {
+    grid-column: 8 / span 5;
+  }
+
+  .hero-calculator-no-calculator .hero-calculator-text {
+    grid-column: 1 / -1;
+  }
+}

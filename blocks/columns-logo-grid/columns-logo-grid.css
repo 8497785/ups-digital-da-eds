@@ -1,0 +1,138 @@
+/* columns-logo-grid: values from source #integrations computed styles */
+
+/* outer frame: cells draw right/bottom rules, the frame draws top/left */
+.columns-logo-grid .columns-logo-grid-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  border-top: 1px solid #b2b2bb;
+  border-left: 1px solid #b2b2bb;
+}
+
+/* intro: heading + lead */
+.columns-logo-grid .columns-logo-grid-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  padding: 48px 32px;
+  border-right: 1px solid #b2b2bb;
+  border-bottom: 1px solid #b2b2bb;
+  background-color: var(--background-color);
+}
+
+.columns-logo-grid .columns-logo-grid-intro > * {
+  margin: 0;
+}
+
+.columns-logo-grid .columns-logo-grid-intro h2 {
+  font-size: var(--heading-font-size-m);
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: normal;
+  color: var(--text-color);
+  text-wrap: balance;
+}
+
+.columns-logo-grid .columns-logo-grid-intro p {
+  font-size: var(--body-font-size-m);
+  line-height: 20px;
+  color: var(--text-muted-color);
+}
+
+/* logo panel */
+.columns-logo-grid .columns-logo-grid-panel {
+  background-color: var(--background-color);
+}
+
+.columns-logo-grid .columns-logo-grid-logos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.columns-logo-grid .columns-logo-grid-logos > li {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border-right: 1px solid #b2b2bb;
+  border-bottom: 1px solid #b2b2bb;
+  background-color: var(--background-color);
+}
+
+.columns-logo-grid .columns-logo-grid-logos > .columns-logo-grid-label {
+  grid-column: 1 / -1;
+}
+
+.columns-logo-grid .columns-logo-grid-label > * {
+  margin: 0;
+  font-size: var(--heading-font-size-xs);
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--text-color);
+}
+
+.columns-logo-grid .columns-logo-grid-logos > .columns-logo-grid-logo {
+  align-items: center;
+}
+
+/* like the source mark (max-inline-size resolves against its own shrink-wrapped
+   title), a mark wider than the cell's content box overflows centred, not scaled */
+.columns-logo-grid .columns-logo-grid-logo picture,
+.columns-logo-grid .columns-logo-grid-logo a {
+  display: block;
+}
+
+/*
+ * Source renders each mark as a #5f5753 mask; the SVGs are black, so a filter
+ * recolours them (black and white fills alike, as the mask does).
+ * Width: the authored per-mark width (source --logo-width), else the same optical
+ * area (~3600px²) for every mark from its aspect ratio.
+ */
+.columns-logo-grid .columns-logo-grid-logo img {
+  display: block;
+  width: var(--logo-width, calc(60px * sqrt(var(--logo-aspect))));
+  max-width: none;
+  height: auto;
+  filter: brightness(0) invert(34%) sepia(16%) saturate(200%);
+}
+
+@media (width >= 768px) {
+  .columns-logo-grid .columns-logo-grid-intro h2 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .columns-logo-grid .columns-logo-grid-intro p {
+    line-height: var(--body-line-height);
+  }
+
+  .columns-logo-grid .columns-logo-grid-logos > li {
+    padding: 24px;
+  }
+
+  .columns-logo-grid .columns-logo-grid-logos > .columns-logo-grid-label {
+    grid-column: auto;
+  }
+
+  .columns-logo-grid .columns-logo-grid-label > * {
+    font-size: var(--heading-font-size-m);
+    line-height: 28px;
+  }
+}
+
+@media (width >= 1024px) {
+  .columns-logo-grid .columns-logo-grid-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .columns-logo-grid .columns-logo-grid-logos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

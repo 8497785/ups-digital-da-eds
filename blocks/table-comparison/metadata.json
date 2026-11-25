@@ -1,0 +1,32 @@
+{
+  "variantName": "table-comparison",
+  "baseBlock": "table",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "header": "'What's covered?' | 'Carrier liability' | 'Shipping insurance' (the last is filled teal and the column is highlighted)",
+    "rowIcons": "72x72 static isometric SVG per topic row (selector div.m-illustration-iXIyDh[data-construct=resolved] > svg.m-illustrationSvg-Z4DQxa); one-off build-in, no ongoing animation; rasterized to images in cleaned.html",
+    "checkIcons": "check_circle icon before each insurance-column cell"
+  },
+  "contentPattern": {
+    "summary": "Rows: General shipping coverage, Porch piracy theft, Time-sensitive goods, Reshipment speed, High-value shipments, Claims process",
+    "rows": [
+      [
+        "What's covered?",
+        "Carrier liability",
+        "Shipping insurance"
+      ],
+      [
+        "icon image + topic",
+        "carrier liability text",
+        "shipping insurance text"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "table-comparison"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Comparison table with a highlighted last column (e.g. carrier liability vs shipping insurance), topic icons in the first column and check markers in the highlighted column.",
+  "reuseGuidance": "First row is the header. Put the recommended option in the last column. First-column images become 72px topic icons."
+}

@@ -1,0 +1,200 @@
+{
+  "templates": [
+    {
+      "name": "shipping-insurance",
+      "urls": [
+        "https://www.insureshield.com/us/en/shipping-insurance.html"
+      ],
+      "representativeUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+      "description": "InsureShield product landing page: hero with premium calculator, comparison table, animated stat tiles (three.js), benefits, signal-field animated band with integrations/solutions/stories, FAQ",
+      "blocks": [
+        {
+          "name": "hero-calculator",
+          "instances": [
+            "#hero-section > section.m-hero-RZrYvQ",
+            "#hero-section > section"
+          ]
+        },
+        {
+          "name": "table-comparison",
+          "instances": [
+            "#difference div.m-comparison--jz65U",
+            "#difference table"
+          ]
+        },
+        {
+          "name": "cards-stat-animated",
+          "instances": [
+            "#standout ul.m-contents-oLI40Z",
+            "#standout ul"
+          ]
+        },
+        {
+          "name": "columns-illustration",
+          "instances": [
+            "#benefits div._container_itksx_33._split_16j9e_76",
+            "#benefits > div"
+          ]
+        },
+        {
+          "name": "widget-signal-field",
+          "instances": [
+            "div.m-patternBand-ymYEmd > div.m-bandPattern-W5DjCD",
+            "div.m-bandPattern-W5DjCD"
+          ]
+        },
+        {
+          "name": "columns-logo-grid",
+          "instances": [
+            "#integrations div.m-grid-K14g0T",
+            "#integrations > div > div"
+          ]
+        },
+        {
+          "name": "cards-illustrated",
+          "instances": [
+            "#solutions ul.m-grid-K14g0T",
+            "#solutions ul"
+          ]
+        },
+        {
+          "name": "cards-story",
+          "instances": [
+            "#stories ul.m-grid-K14g0T",
+            "#stories ul"
+          ]
+        },
+        {
+          "name": "accordion-faq",
+          "instances": [
+            "#faq div.m-list-1i41Cu",
+            "#faq div.m-faq-ON5fp8 > div:last-child"
+          ]
+        },
+        {
+          "name": "quote-drawer",
+          "instances": [
+            "aside.m-dock-0pqo-G",
+            "aside[aria-label=\"Quote monthly cost\"]"
+          ]
+        }
+      ],
+      "urlPattern": "/us/en/*",
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero with premium calculator",
+          "selector": [
+            "#hero-section"
+          ],
+          "style": null,
+          "blocks": [
+            "hero-calculator"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Carrier vs insurance comparison",
+          "selector": [
+            "#difference"
+          ],
+          "style": null,
+          "blocks": [
+            "table-comparison"
+          ],
+          "defaultContent": [
+            "#difference div.m-intro-LLXMXV"
+          ]
+        },
+        {
+          "id": "section-3",
+          "name": "Why we stand out (stat tiles)",
+          "selector": [
+            "#standout"
+          ],
+          "style": "split",
+          "blocks": [
+            "cards-stat-animated"
+          ],
+          "defaultContent": [
+            "#standout div.m-intro-DO5l6J"
+          ]
+        },
+        {
+          "id": "section-4",
+          "name": "Benefits",
+          "selector": [
+            "#benefits"
+          ],
+          "style": null,
+          "blocks": [
+            "columns-illustration"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-5",
+          "name": "Signal-field animated background",
+          "selector": [
+            "div.m-patternBand-ymYEmd > div.m-bandPattern-W5DjCD",
+            "div.m-bandPattern-W5DjCD"
+          ],
+          "style": null,
+          "blocks": [
+            "widget-signal-field"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-6",
+          "name": "Integrations, related solutions, stories",
+          "selector": [
+            "div.m-patternBand-ymYEmd > div.m-bandContent-nsDH6A",
+            "div.m-bandContent-nsDH6A"
+          ],
+          "style": null,
+          "blocks": [
+            "columns-logo-grid",
+            "cards-illustrated",
+            "cards-story"
+          ],
+          "defaultContent": [
+            "#solutions div.m-intro-LLXMXV",
+            "#stories div.m-intro-LLXMXV"
+          ]
+        },
+        {
+          "id": "section-7",
+          "name": "FAQ",
+          "selector": [
+            "#faq"
+          ],
+          "style": "split",
+          "blocks": [
+            "accordion-faq"
+          ],
+          "defaultContent": [
+            "#faq div.m-intro-LLXMXV"
+          ]
+        },
+        {
+          "id": "section-8",
+          "name": "Quote dock and Build a quote drawer",
+          "selector": [
+            "aside.m-dock-0pqo-G",
+            "aside[aria-label=\"Quote monthly cost\"]"
+          ],
+          "style": null,
+          "blocks": [
+            "quote-drawer"
+          ],
+          "defaultContent": []
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "projectType": "da"
+  }
+}

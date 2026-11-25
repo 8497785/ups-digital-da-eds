@@ -1,0 +1,64 @@
+/*
+ * Brand tokens extracted from https://www.insureshield.com/us/en/shipping-insurance.html
+ * (computed styles; see migration-work/brand.json and migration-work/brand-probe.json).
+ */
+:root {
+  /* colors */
+  --background-color: #fff;
+  --text-color: #121212;
+  --text-muted-color: #5f5753;
+  --light-color: #efeff2;
+  --dark-color: #121212;
+  --link-color: #0662bb;
+  --link-hover-color: #064d93;
+  --brand-teal: #0a8080;
+  --brand-teal-hover: #086b6b;
+  --border-color: #85858e;
+  --border-subtle-color: rgb(26 26 31 / 12%);
+  --focus-ring-color: #0662bb;
+
+  /* fonts */
+  --body-font-family: inter, inter-fallback, system-ui, sans-serif;
+  --heading-font-family: inter, inter-fallback, system-ui, sans-serif;
+
+  /* body sizes */
+  --body-font-size-l: 18px;
+  --body-font-size-m: 16px;
+  --body-font-size-s: 14px;
+  --body-font-size-xs: 12px;
+  --body-line-height: 24px;
+
+  /* heading sizes (mobile) */
+  --heading-font-size-xxl: 36px;
+  --heading-font-size-xl: 28px;
+  --heading-font-size-l: 24px;
+  --heading-font-size-m: 20px;
+  --heading-font-size-s: 18px;
+  --heading-font-size-xs: 16px;
+
+  /* spacing */
+  --section-padding: 48px;
+  --content-max-width: 1248px;
+  --content-gutter: 16px;
+
+  /* motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 0.1s;
+}
+
+/* source md breakpoint */
+@media (width >= 768px) {
+  :root {
+    /* heading sizes (desktop) */
+    --heading-font-size-xxl: 48px;
+    --heading-font-size-xl: 40px;
+    --heading-font-size-l: 32px;
+    --heading-font-size-m: 20px;
+    --heading-font-size-s: 18px;
+    --heading-font-size-xs: 16px;
+
+    /* spacing */
+    --section-padding: 64px;
+    --content-gutter: 32px;
+  }
+}

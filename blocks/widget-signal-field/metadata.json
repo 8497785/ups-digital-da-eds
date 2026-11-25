@@ -1,0 +1,36 @@
+{
+  "variantName": "widget-signal-field",
+  "baseBlock": "widget",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "animation": {
+      "selector": "#main > div.m-patternBand-ymYEmd > div.m-root-shKdUH.m-fill-wlwRr7.m-bandPattern-W5DjCD[data-pattern='signal-field'] > div.m-host--uqlRe > canvas.m-canvas-wTEIQi",
+      "elementType": "canvas, 2D context (not WebGL)",
+      "dataAttributes": "container: data-pattern=\"signal-field\" aria-hidden=\"true\"; canvas: data-live=\"true\"",
+      "dependsOn": [
+        "https://www.insureshield.com/assets/insureshield/index-UfCqhPTV.js",
+        "https://www.insureshield.com/assets/insureshield/index-CDx1CeDI.css"
+      ],
+      "externalAssets": "none (procedural)",
+      "depicts": "Field of small grey signal dots across the band, denser at its top and bottom edges",
+      "howItAnimates": "Continuous loop: frames change while idle (twinkling or drifting dots), and it reacts to pointer movement read from document events (the canvas has pointer-events:none)",
+      "dimensions": "1280x1899 CSS px, absolute inset 0 behind div.m-bandContent-nsDH6A (integrations + solutions + stories)"
+    },
+    "placement": "Behind section-6 as an absolute background. It takes no layout height; the widget positions itself over the next section"
+  },
+  "contentPattern": {
+    "summary": "One cell holding a link to /widgets/signal-field (widget block convention); no other text",
+    "rows": [
+      [
+        "link /widgets/signal-field"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "widget-signal-field"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Animated dot-field background (\"signal field\") that sits behind the following section without taking layout height.",
+  "reuseGuidance": "Place the block (one cell with a link to /widgets/signal-field) in its own section directly before the section it should decorate. Optional link query params: density (0-1), accent (0-1), seed. A bare /widgets/signal-field link also works through the widget block."
+}

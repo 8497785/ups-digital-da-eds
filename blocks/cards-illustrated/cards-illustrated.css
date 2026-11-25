@@ -1,0 +1,210 @@
+/* cards-illustrated: values from source computed styles (#solutions ul.m-grid-K14g0T) */
+
+/* grid: the list draws the top/left rule, each card its right/bottom rule */
+.cards-illustrated > ul {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #b2b2bb;
+  border-left: 1px solid #b2b2bb;
+  list-style: none;
+  font-family: var(--body-font-family);
+}
+
+.cards-illustrated .cards-illustrated-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 24px;
+  border-right: 1px solid #b2b2bb;
+  border-bottom: 1px solid #b2b2bb;
+  background-color: rgb(243 249 249);
+  color: var(--text-color);
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition-property: background-color, outline-color;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-standard);
+}
+
+.cards-illustrated .cards-illustrated-card:hover,
+.cards-illustrated .cards-illustrated-card:focus-within {
+  background-color: var(--background-color);
+}
+
+.cards-illustrated .cards-illustrated-card:has(.cards-illustrated-title a:focus-visible) {
+  z-index: 2;
+  outline-color: var(--border-color);
+}
+
+/* illustration band: bleeds to the card edges */
+.cards-illustrated .cards-illustrated-card-image {
+  position: relative;
+  flex: 0 0 auto;
+  height: 96px;
+  margin: -24px -24px 8px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cards-illustrated .cards-illustrated-card-image picture,
+.cards-illustrated .cards-illustrated-card-image img,
+.cards-illustrated .cards-illustrated-card-image svg.illustration-construct {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cards-illustrated .cards-illustrated-card-image img {
+  object-fit: contain;
+}
+
+.cards-illustrated .cards-illustrated-card-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cards-illustrated .cards-illustrated-card-body > * {
+  margin: 0;
+}
+
+/* title: the link stretches over the whole card */
+.cards-illustrated .cards-illustrated-title {
+  margin: 0;
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  text-wrap: balance;
+}
+
+.cards-illustrated .cards-illustrated-title a:any-link {
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  outline: none;
+}
+
+.cards-illustrated .cards-illustrated-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.cards-illustrated .cards-illustrated-description {
+  color: var(--text-muted-color);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+/* tags: inline list separated by middle dots */
+.cards-illustrated .cards-illustrated-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.cards-illustrated .cards-illustrated-tags li {
+  margin: 0;
+  padding: 0;
+}
+
+.cards-illustrated .cards-illustrated-tags li + li::before {
+  content: "·";
+  margin-right: 12px;
+  color: var(--text-muted-color);
+}
+
+/* footer cue: "Learn more" with a forward arrow, pushed to the bottom right */
+.cards-illustrated .cards-illustrated-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.cards-illustrated .cards-illustrated-action a:any-link {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+  color: #075a5a;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+.cards-illustrated .cards-illustrated-action a::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M686-450H190q-13 0-21.5-8.5T160-480q0-13 8.5-21.5T190-510h496L459-737q-9-9-9-21t9-21q9-9 21-9t21 9l278 278q5 5 7 10t2 11q0 6-2 11t-7 10L501-181q-9 9-21 9t-21-9q-9-9-9-21t9-21l227-227Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: translate var(--duration-fast) var(--ease-standard);
+}
+
+.cards-illustrated .cards-illustrated-card:hover .cards-illustrated-action a::after,
+.cards-illustrated .cards-illustrated-card:has(.cards-illustrated-title a:focus-visible) .cards-illustrated-action a::after {
+  translate: 4px 0;
+}
+
+/* card hover underlines the title */
+.cards-illustrated .cards-illustrated-card:hover .cards-illustrated-title a:any-link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+@media (width >= 768px) {
+  .cards-illustrated > ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cards-illustrated .cards-illustrated-card-image {
+    height: 160px;
+  }
+
+  .cards-illustrated .cards-illustrated-title {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .cards-illustrated .cards-illustrated-description,
+  .cards-illustrated .cards-illustrated-action a:any-link {
+    font-size: var(--body-font-size-s);
+    line-height: 20px;
+  }
+
+  .cards-illustrated .cards-illustrated-tags {
+    font-size: var(--body-font-size-xs);
+    line-height: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cards-illustrated .cards-illustrated-card,
+  .cards-illustrated .cards-illustrated-action a::after {
+    transition-duration: 0s;
+  }
+}

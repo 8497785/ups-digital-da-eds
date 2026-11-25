@@ -1,0 +1,219 @@
+/* cards-story: values from the source #stories tile grid (computed styles) */
+
+/* grid with hairline rules: outer top/left on the list, bottom/right on each tile */
+.cards-story > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  border-top: 1px solid #b2b2bb;
+  border-left: 1px solid #b2b2bb;
+  font-family: var(--body-font-family);
+}
+
+@media (width >= 768px) {
+  .cards-story > ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 1024px) {
+  .cards-story > ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.cards-story .cards-story-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid #b2b2bb;
+  border-bottom: 1px solid #b2b2bb;
+  background-color: #f3f7fb;
+  color: var(--text-color);
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition:
+    background-color 0.2s var(--ease-standard),
+    outline-color 0.2s var(--ease-standard);
+}
+
+/* photo: full-bleed 4:3 on top */
+.cards-story .cards-story-card-image {
+  position: relative;
+  flex: 0 0 auto;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: var(--light-color);
+  pointer-events: none;
+}
+
+.cards-story .cards-story-card-image picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cards-story .cards-story-card-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale 0.32s var(--ease-standard);
+}
+
+/* body: 24px tile padding; 8px media margin + 12px gap above the eyebrow */
+.cards-story .cards-story-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 24px 24px;
+}
+
+.cards-story .cards-story-card-body > * {
+  margin: 0;
+}
+
+.cards-story .cards-story-eyebrow {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--text-muted-color);
+}
+
+.cards-story .cards-story-title {
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--text-color);
+  text-wrap: balance;
+}
+
+/*
+ * the source title text sits in an inline link ending in its stretched-link ::after (an empty
+ * absolute box), which changes where Chrome balances the lines ("What is shipping / insurance?");
+ * an inert copy on an inline wrapper keeps them equal (on the block itself it has no effect)
+ */
+.cards-story .cards-story-title-text::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.cards-story .cards-story-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--text-muted-color);
+}
+
+/* footer cue: right-aligned "Read the story" + arrow */
+.cards-story .cards-story-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+main .cards-story .cards-story-action a:any-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #075a5a;
+  text-decoration: none;
+}
+
+main .cards-story .cards-story-action a:any-link::after {
+  content: '';
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M686-450H190q-13 0-21.5-8.5T160-480q0-13 8.5-21.5T190-510h496L459-737q-9-9-9-21t9-21q9-9 21-9t21 9l278 278q5 5 7 10t2 11q0 6-2 11t-7 10L501-181q-9 9-21 9t-21-9q-9-9-9-21t9-21l227-227Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: translate 0.1s var(--ease-standard);
+}
+
+/* the action link covers the whole card */
+.cards-story .cards-story-linked .cards-story-action a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* hover / focus / pressed */
+.cards-story .cards-story-linked:hover,
+.cards-story .cards-story-linked:focus-within {
+  background-color: var(--background-color);
+}
+
+.cards-story .cards-story-linked:active {
+  background-color: #e7f2f2;
+}
+
+.cards-story .cards-story-linked:hover .cards-story-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.cards-story .cards-story-linked:hover .cards-story-card-image img {
+  scale: 1.04;
+}
+
+.cards-story .cards-story-linked:hover .cards-story-action a::after,
+.cards-story .cards-story-linked:has(.cards-story-action a:focus-visible) .cards-story-action a::after {
+  translate: 4px 0;
+}
+
+main .cards-story .cards-story-action a:focus-visible {
+  outline: none;
+}
+
+.cards-story .cards-story-linked:has(.cards-story-action a:focus-visible) {
+  z-index: 2;
+  outline-color: var(--border-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cards-story .cards-story-card,
+  .cards-story .cards-story-card-image img,
+  main .cards-story .cards-story-action a:any-link::after {
+    transition-duration: 0s;
+  }
+
+  .cards-story .cards-story-linked:hover .cards-story-card-image img {
+    scale: 1;
+    filter: brightness(1.08);
+  }
+
+  .cards-story .cards-story-linked:hover .cards-story-action a::after {
+    translate: none;
+  }
+}
+
+@media (width >= 768px) {
+  .cards-story .cards-story-eyebrow {
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  .cards-story .cards-story-title {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .cards-story .cards-story-description,
+  main .cards-story .cards-story-action a:any-link {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

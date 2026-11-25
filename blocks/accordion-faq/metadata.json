@@ -1,0 +1,26 @@
+{
+  "variantName": "accordion-faq",
+  "baseBlock": "accordion",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "summary": "Hairline dividers, plus icon on the right, question text 14px"
+  },
+  "contentPattern": {
+    "rows": [
+      [
+        "question",
+        "answer"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "accordion-faq"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "FAQ accordion: questions with hairline dividers and a plus icon that expand to their answers.",
+  "reuseGuidance": "One row per question: question | answer. Uses native details/summary, so it works without JS-driven state.",
+  "sectionMetadata": {
+    "style": "split"
+  }
+}

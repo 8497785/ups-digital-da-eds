@@ -1,0 +1,24 @@
+{
+  "variantName": "columns-illustration",
+  "baseBlock": "columns",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "leftCell": "473x384 static isometric inline SVG (selector #benefits div._splitMedia_16j9e_88 svg.m-illustrationSvg-Z4DQxa): a box travelling a path to a house, guarded by a teal shield. data-construct build-in only, no ongoing animation; rasterized in cleaned.html",
+    "rightCell": "H2 'Benefits of InsureShield shipping insurance', 4-item check list (bold title + description), outlined button 'Carrier liability vs shipping insurance'"
+  },
+  "contentPattern": {
+    "rows": [
+      [
+        "illustration image",
+        "H2, list, CTA"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "columns-illustration"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Two columns: a large illustration beside a heading, a check list (bold title + description per item) and a CTA.",
+  "reuseGuidance": "Use for a benefits/feature summary next to an illustration. The image column is detected by content, so either order works."
+}

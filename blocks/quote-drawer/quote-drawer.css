@@ -1,0 +1,1674 @@
+/* state rules (hover, checked, pressed, disabled) are ordered by state priority, not specificity */
+/* stylelint-disable no-descending-specificity */
+
+/*
+ * quote-drawer
+ * Values from the source (insureshield.com shipping-insurance): m-dock, QuoteDrawer sheet,
+ * select, range, choice tiles, buttons and fields. Tokens mirror the source design system
+ * (--m-*), resolved for the InsureShield light theme.
+ */
+
+/* the block section holds only a fixed dock and a top-layer dialog */
+main > .section.quote-drawer-container {
+  padding: 0;
+}
+
+main > .section.quote-drawer-container > .quote-drawer-wrapper {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.quote-drawer {
+  --m-font: inter, inter-fallback, system-ui, sans-serif;
+
+  /* type ramp (size/line-height): below the source md breakpoint every drawer text is 16px */
+  --qd-type-xs: 16px/16px;
+  --qd-type-s: 16px/20px;
+  --qd-type-m: 16px/20px;
+  --qd-type-dock: 16px/20px;
+  --qd-type-l: 16px/24px;
+  --qd-type-xl: 16px/24px;
+  --m-color-primary-default: #0a8080;
+  --m-color-primary-hover: #6fb1b1;
+  --m-color-primary-pressed: #075a5a;
+  --m-color-primary-on: #fff;
+  --m-color-selection-default: #0a8080;
+  --m-color-selection-on: #fff;
+  --m-color-selection-on-container: #075a5a;
+  --m-color-selection-container: #e7f2f2;
+  --m-color-selection-container-low: #e7f2f2;
+  --m-color-selection-container-lowest: #f3f9f9;
+  --m-color-brand-container-low: #e7f2f2;
+  --m-color-surface-bright: #fff;
+  --m-color-surface-container-low: #efeff2;
+  --m-color-surface-container-high: #eceae9;
+  --m-color-surface-inverse: #363230;
+  --m-color-ink-default: #121212;
+  --m-color-ink-medium: #5f5753;
+  --m-color-ink-disabled: #bfb8af;
+  --m-color-outline-default: #85858e;
+  --m-color-outline-variant: #b2b2bb;
+  --m-color-outline-variant-low: rgb(26 26 31 / 12%);
+  --m-color-outline-secondary: #0662bb;
+  --m-color-outline-error: #df2901;
+  --m-color-error-on-container: #991c00;
+  --m-color-secondary-on-inverse: #0662bb;
+  --m-color-secondary-on-container: #064d93;
+  --m-button-secondary-edge: #85858e;
+  --m-button-secondary-ink: #121212;
+  --m-button-secondary-hover-edge: #121212;
+  --m-button-secondary-hover-fill: #efeff2;
+  --m-focus-ring-color: #85858e;
+  --m-shadow-1: 0 1px 2px 0 #0000000d;
+  --m-shadow-3: 0 2px 4px 0 #0000000f, 0 4px 8px 0 #00000014;
+  --m-shadow-4: 0 4px 8px 0 #00000014, 0 8px 16px 0 #0000001f;
+  --m-shadow-5: 0 8px 16px 0 #0000001f, 0 16px 32px 0 #00000029;
+  --m-duration-fast: 0.1s;
+  --m-duration-base: 0.2s;
+  --m-duration-slow: 0.32s;
+  --m-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --m-easing-enter: cubic-bezier(0, 0, 0, 1);
+  --m-easing-exit: cubic-bezier(0.3, 0, 1, 1);
+
+  font-family: var(--m-font);
+  color: var(--m-color-ink-default);
+}
+
+.quote-drawer [hidden] {
+  display: none !important;
+}
+
+.quote-drawer .quote-drawer-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.quote-drawer .quote-drawer-icon {
+  flex: none;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.quote-drawer .quote-drawer-icon[data-size='14'] {
+  width: 14px;
+  height: 14px;
+}
+
+.quote-drawer .quote-drawer-icon[data-size='16'] {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- dock ---------- */
+.quote-drawer .quote-drawer-dock {
+  position: fixed;
+  inset: auto 16px 16px auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  opacity: 0;
+  translate: 0 16px;
+  pointer-events: none;
+  transition: opacity var(--m-duration-base) var(--m-easing-standard),
+    translate var(--m-duration-base) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-dock[data-visible] {
+  opacity: 1;
+  translate: none;
+  pointer-events: auto;
+}
+
+.quote-drawer .quote-drawer-dock-raised {
+  position: relative;
+  display: flex;
+}
+
+.quote-drawer .quote-drawer-dock-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  box-shadow: var(--m-shadow-4);
+  pointer-events: none;
+}
+
+.quote-drawer .quote-drawer-dock-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  margin: 0;
+  padding: 1px 24px;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--m-color-primary-default);
+  color: var(--m-color-primary-on);
+  font: 500 var(--qd-type-dock) var(--m-font);
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: 4px;
+  transition: background-color var(--m-duration-fast) var(--m-easing-standard),
+    outline-color var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-dock-button:hover {
+  background-color: var(--m-color-primary-hover);
+}
+
+.quote-drawer .quote-drawer-dock-button:active {
+  background-color: var(--m-color-primary-pressed);
+}
+
+.quote-drawer .quote-drawer-dock-button:focus-visible {
+  outline-color: var(--m-focus-ring-color);
+}
+
+/* 8px dot with a ping: 1.28s (4 x slow), exit easing, scale 2.4 and fade by 75% */
+.quote-drawer .quote-drawer-pulse {
+  position: relative;
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: currentcolor;
+}
+
+.quote-drawer .quote-drawer-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background-color: currentcolor;
+  animation: quote-drawer-ping calc(var(--m-duration-slow) * 4) var(--m-easing-exit) infinite;
+}
+
+@keyframes quote-drawer-ping {
+  0% {
+    opacity: 1;
+    scale: 1;
+  }
+
+  75%,
+  100% {
+    opacity: 0;
+    scale: 2.4;
+  }
+}
+
+/* ---------- sheet ---------- */
+.quote-drawer .quote-drawer-sheet {
+  position: fixed;
+  inset: 0 0 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background-color: var(--m-color-surface-bright);
+  color: var(--m-color-ink-default);
+  box-shadow: var(--m-shadow-5);
+  outline: none;
+  translate: 100% 0;
+  transition: translate var(--m-duration-slow) var(--m-easing-exit),
+    width var(--m-duration-slow) var(--m-easing-enter),
+    overlay var(--m-duration-slow) allow-discrete,
+    display var(--m-duration-slow) allow-discrete;
+}
+
+.quote-drawer .quote-drawer-sheet[open] {
+  display: flex;
+  translate: 0 0;
+  transition-timing-function: var(--m-easing-enter);
+}
+
+@starting-style {
+  .quote-drawer .quote-drawer-sheet[open] {
+    translate: 100% 0;
+  }
+}
+
+.quote-drawer .quote-drawer-sheet::backdrop {
+  background-color: rgb(54 50 48 / 0%);
+  transition: background-color var(--m-duration-slow) var(--m-easing-standard),
+    overlay var(--m-duration-slow) allow-discrete,
+    display var(--m-duration-slow) allow-discrete;
+}
+
+.quote-drawer .quote-drawer-sheet[open]::backdrop {
+  background-color: rgb(54 50 48 / 50%);
+}
+
+@starting-style {
+  .quote-drawer .quote-drawer-sheet[open]::backdrop {
+    background-color: rgb(54 50 48 / 0%);
+  }
+}
+
+/* JS fallback where transition-behavior: allow-discrete is unsupported */
+.quote-drawer.quote-drawer-legacy .quote-drawer-sheet[open]:not(.is-open) {
+  translate: 100% 0;
+  transition-timing-function: var(--m-easing-exit);
+}
+
+.quote-drawer.quote-drawer-legacy .quote-drawer-sheet[open]:not(.is-open)::backdrop {
+  background-color: rgb(54 50 48 / 0%);
+}
+
+.quote-drawer .quote-drawer-panel {
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background-color: var(--m-color-surface-bright);
+}
+
+.quote-drawer .quote-drawer-header {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px 16px;
+  width: 100%;
+  padding: 16px;
+}
+
+.quote-drawer .quote-drawer-header-lead {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.quote-drawer .quote-drawer-title {
+  margin: 0;
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-m) var(--m-font);
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.quote-drawer .quote-drawer-icon-button {
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--m-color-outline-default);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--m-color-ink-default);
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: 4px;
+  transition-property: background-color, border-color, color, outline-color;
+  transition-duration: var(--m-duration-fast);
+  transition-timing-function: var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-icon-button .quote-drawer-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.quote-drawer .quote-drawer-icon-button:hover {
+  border-color: var(--m-color-ink-default);
+  background-color: var(--m-color-surface-container-low);
+}
+
+.quote-drawer .quote-drawer-icon-button:active {
+  border-color: var(--m-color-ink-default);
+  background-color: var(--m-color-surface-container-high);
+}
+
+.quote-drawer .quote-drawer-icon-button:focus-visible {
+  outline-color: var(--m-focus-ring-color);
+}
+
+/* the body scrolls; the footer follows short content and stays pinned under long content */
+.quote-drawer .quote-drawer-body {
+  flex: 0 1 auto;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--m-color-outline-variant-low);
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-s) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-sheet[data-step='form'] .quote-drawer-body {
+  padding-bottom: 24px;
+}
+
+.quote-drawer .quote-drawer-foot {
+  position: relative;
+  flex: none;
+  padding: 0 16px 16px;
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-s) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-foot::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 100%;
+  height: 24px;
+  background-image: linear-gradient(to bottom, transparent, var(--m-color-surface-bright));
+  pointer-events: none;
+}
+
+.quote-drawer .quote-drawer-foot-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quote-drawer .quote-drawer-step {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.quote-drawer .quote-drawer-step:focus {
+  outline: none;
+}
+
+.quote-drawer .quote-drawer-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quote-drawer .quote-drawer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.quote-drawer .quote-drawer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.quote-drawer .quote-drawer-note {
+  margin: 0;
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-xs) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-lead {
+  margin: 0;
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-m) var(--m-font);
+}
+
+/* revealed groups: rows 0fr -> 1fr with a fade, 320ms enter easing */
+.quote-drawer .quote-drawer-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows var(--m-duration-slow) var(--m-easing-enter),
+    opacity var(--m-duration-slow) var(--m-easing-enter);
+}
+
+.quote-drawer .quote-drawer-reveal[data-open] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.quote-drawer .quote-drawer-reveal-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.quote-drawer .quote-drawer-fade,
+.quote-drawer .quote-drawer-arrive {
+  animation: quote-drawer-fade-in var(--m-duration-slow) var(--m-easing-enter) both;
+}
+
+@keyframes quote-drawer-fade-in {
+  0% {
+    opacity: 0;
+  }
+}
+
+/* freight leaves/returns with a view transition when the solution changes */
+.quote-drawer .quote-drawer-tile-parcel {
+  view-transition-name: quote-type-parcel;
+}
+
+.quote-drawer .quote-drawer-tile-freight {
+  view-transition-name: quote-type-freight;
+}
+
+.quote-drawer .quote-drawer-tile-luxury {
+  view-transition-name: quote-type-luxury;
+}
+
+::view-transition-group(quote-type-parcel),
+::view-transition-group(quote-type-freight),
+::view-transition-group(quote-type-luxury),
+::view-transition-old(quote-type-freight),
+::view-transition-new(quote-type-freight) {
+  animation-duration: 0.32s;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ---------- buttons ---------- */
+.quote-drawer .quote-drawer-button {
+  --btn-fill: transparent;
+  --btn-lift: 0;
+
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-m) var(--m-font);
+  letter-spacing: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  outline: 2px solid transparent;
+  outline-offset: 4px;
+  transition-property: background-color, border-color, box-shadow, color, outline-color,
+    text-decoration-color, scale;
+  transition-duration: var(--m-duration-fast);
+  transition-timing-function: var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-button:focus-visible {
+  outline-color: var(--m-focus-ring-color);
+}
+
+.quote-drawer .quote-drawer-button:disabled {
+  color: var(--m-color-ink-disabled);
+  cursor: not-allowed;
+}
+
+.quote-drawer .quote-drawer-button-label {
+  display: inline-block;
+}
+
+.quote-drawer .quote-drawer-button-icon {
+  display: inline-flex;
+  flex: none;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  transition: transform var(--m-duration-base) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-button-icon .quote-drawer-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.quote-drawer .quote-drawer-button:hover:not(:disabled) .quote-drawer-button-trailing,
+.quote-drawer .quote-drawer-button:focus-visible .quote-drawer-button-trailing {
+  transform: translateX(2px);
+}
+
+.quote-drawer .quote-drawer-button[data-variant='primary'] {
+  --btn-fill: var(--m-color-primary-default);
+
+  isolation: isolate;
+  color: var(--m-color-primary-on);
+}
+
+.quote-drawer .quote-drawer-button[data-variant='primary']::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: var(--btn-fill);
+  pointer-events: none;
+  transition: background-color var(--m-duration-fast) var(--m-easing-standard),
+    filter var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-button[data-variant='primary']:hover:not(:disabled) {
+  --btn-lift: 4px;
+
+  box-shadow: var(--m-shadow-3);
+  scale: 1.03;
+}
+
+.quote-drawer .quote-drawer-button[data-variant='primary']:hover:not(:disabled, :active)::after {
+  filter: brightness(0.9);
+}
+
+.quote-drawer .quote-drawer-button[data-variant='primary']:active:not(:disabled) {
+  --btn-fill: var(--m-color-primary-pressed);
+  --btn-lift: 0;
+
+  box-shadow: var(--m-shadow-1);
+  scale: none;
+}
+
+.quote-drawer .quote-drawer-button[data-variant='primary']:disabled {
+  --btn-fill: var(--m-color-surface-container-high);
+
+  color: var(--m-color-ink-disabled);
+}
+
+/*
+ * hatch layer of the source primary button; the source only shows it with
+ * [data-elevation-style=hatch] (not set on this page), so it stays hidden here too
+ */
+.quote-drawer .quote-drawer-button-hatch {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  display: none;
+  border-radius: inherit;
+  background-color: var(--m-color-outline-default);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M-1 1L1 -1M0 4L4 0M3 5L5 3' stroke='black' stroke-width='1'/%3E%3C/svg%3E");
+  mask-position: 0 100%;
+  mask-size: 4px 4px;
+  translate: calc(var(--btn-lift) * -1) var(--btn-lift);
+  pointer-events: none;
+  transition: translate var(--m-duration-fast) var(--m-easing-standard);
+}
+
+[data-elevation-style='hatch'] .quote-drawer .quote-drawer-button-hatch {
+  display: block;
+}
+
+.quote-drawer .quote-drawer-button[data-variant='secondary'] {
+  border-color: var(--m-button-secondary-edge);
+  color: var(--m-button-secondary-ink);
+}
+
+.quote-drawer .quote-drawer-button[data-variant='secondary']:hover:not(:disabled) {
+  border-color: var(--m-button-secondary-hover-edge);
+  background-color: var(--m-button-secondary-hover-fill);
+}
+
+.quote-drawer .quote-drawer-button[data-variant='secondary']:active:not(:disabled) {
+  border-color: var(--m-button-secondary-hover-edge);
+  background-color: var(--m-color-surface-container-high);
+}
+
+.quote-drawer .quote-drawer-button[data-variant='secondary']:disabled {
+  border-color: var(--m-color-outline-variant);
+  background-color: transparent;
+}
+
+.quote-drawer .quote-drawer-button[data-variant='tertiary'] {
+  padding-inline: 0;
+  border-radius: 4px;
+  color: var(--m-color-secondary-on-inverse);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  outline-offset: 2px;
+}
+
+.quote-drawer .quote-drawer-button[data-variant='tertiary']:hover,
+.quote-drawer .quote-drawer-button[data-variant='tertiary']:active {
+  color: var(--m-color-secondary-on-container);
+  text-decoration-color: currentcolor;
+}
+
+.quote-drawer .quote-drawer-button[data-size='small'] {
+  gap: 4px;
+  min-height: 34px;
+  font: 500 var(--qd-type-s) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-button[data-size='small'] .quote-drawer-button-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- select (listbox) ---------- */
+.quote-drawer .quote-drawer-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quote-drawer .quote-drawer-select-label,
+.quote-drawer .quote-drawer-group-label,
+.quote-drawer .quote-drawer-range-label {
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-s) var(--m-font);
+  text-wrap: balance;
+}
+
+.quote-drawer .quote-drawer-select-control,
+.quote-drawer .quote-drawer-field-control {
+  --field-edge: var(--m-color-outline-default);
+  --field-edge-width: 1px;
+
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 8px 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--m-color-surface-bright);
+  color: var(--m-color-ink-default);
+  font: 400 var(--qd-type-s) var(--m-font);
+  text-align: start;
+  outline: var(--field-edge-width) solid var(--field-edge);
+  outline-offset: calc(var(--field-edge-width) * -1);
+  transition: outline-color var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-select-control {
+  cursor: pointer;
+}
+
+.quote-drawer .quote-drawer-select-control:hover,
+.quote-drawer .quote-drawer-field-control:hover {
+  --field-edge: var(--m-color-ink-medium);
+}
+
+.quote-drawer .quote-drawer-select-control:focus-visible,
+.quote-drawer .quote-drawer-select-control[data-pressed],
+.quote-drawer .quote-drawer-field-control:focus-within {
+  --field-edge: var(--m-color-outline-secondary);
+  --field-edge-width: 2px;
+}
+
+.quote-drawer .quote-drawer-field-control[data-invalid] {
+  --field-edge: var(--m-color-outline-error);
+}
+
+.quote-drawer .quote-drawer-select-value {
+  flex: auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quote-drawer .quote-drawer-select-caret {
+  color: var(--m-color-ink-medium);
+}
+
+.quote-drawer .quote-drawer-listbox-popover {
+  position: fixed;
+  inset: auto;
+  z-index: 200;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity var(--m-duration-fast) var(--m-easing-standard),
+    translate var(--m-duration-fast) var(--m-easing-standard),
+    overlay var(--m-duration-fast) allow-discrete,
+    display var(--m-duration-fast) allow-discrete;
+}
+
+@starting-style {
+  .quote-drawer .quote-drawer-listbox-popover:popover-open {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+.quote-drawer .quote-drawer-listbox-popover:not(:popover-open, [hidden]) {
+  opacity: 0;
+}
+
+.quote-drawer .quote-drawer-listbox-popover[hidden] {
+  display: none;
+}
+
+.quote-drawer .quote-drawer-listbox-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: var(--m-shadow-4);
+  pointer-events: none;
+}
+
+.quote-drawer .quote-drawer-listbox {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-height: 288px;
+  padding: 4px 0;
+  overflow: auto;
+  border: 1px solid var(--m-color-outline-variant);
+  border-radius: 8px;
+  background-color: var(--m-color-surface-bright);
+  outline: none;
+}
+
+.quote-drawer .quote-drawer-option {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  padding: 8px 12px;
+  color: var(--m-color-ink-default);
+  font: 400 var(--qd-type-s) var(--m-font);
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: background-color var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-option:hover,
+.quote-drawer .quote-drawer-option[data-focused] {
+  background-color: var(--m-color-surface-container-low);
+}
+
+.quote-drawer .quote-drawer-option:active {
+  background-color: var(--m-color-surface-container-high);
+}
+
+.quote-drawer .quote-drawer-option:focus-visible {
+  outline-color: var(--m-focus-ring-color);
+}
+
+.quote-drawer .quote-drawer-option-label {
+  min-width: 0;
+}
+
+.quote-drawer .quote-drawer-option[aria-selected='true'] .quote-drawer-option-label {
+  font-weight: 500;
+}
+
+.quote-drawer .quote-drawer-option-check {
+  color: var(--m-color-selection-default);
+  opacity: 0;
+}
+
+.quote-drawer .quote-drawer-option[aria-selected='true'] .quote-drawer-option-check {
+  opacity: 1;
+}
+
+/* ---------- range (size sm: 8px rails, 24px handles) ---------- */
+.quote-drawer .quote-drawer-range {
+  --rs-track: 8px;
+  --rs-handle: 24px;
+  --rs-gap: 8px;
+  --rs-stop-inset: 2px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quote-drawer .quote-drawer-range-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.quote-drawer .quote-drawer-range-readout {
+  display: grid;
+  max-width: 100%;
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-s) var(--m-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.quote-drawer .quote-drawer-range-readout > span {
+  grid-area: 1 / 1;
+}
+
+.quote-drawer .quote-drawer-range-reserve {
+  visibility: hidden;
+}
+
+.quote-drawer .quote-drawer-range-track {
+  position: relative;
+  height: var(--rs-handle);
+  touch-action: none;
+}
+
+.quote-drawer .quote-drawer-range-rail,
+.quote-drawer .quote-drawer-range-band {
+  position: absolute;
+  top: 50%;
+  height: var(--rs-track);
+  translate: 0 -50%;
+}
+
+.quote-drawer .quote-drawer-range-rail {
+  overflow: hidden;
+  background-color: var(--m-color-selection-container);
+}
+
+.quote-drawer .quote-drawer-range-rail[data-side='start'] {
+  left: 0;
+  width: max(0px, calc(var(--rs-start, 0) * 100% - var(--rs-gap)));
+  border-radius: 999px 4px 4px 999px;
+}
+
+.quote-drawer .quote-drawer-range-rail[data-side='end'] {
+  inset-inline: calc(var(--rs-end, 1) * 100% + var(--rs-gap)) 0;
+  border-radius: 4px 999px 999px 4px;
+}
+
+.quote-drawer .quote-drawer-range-rail::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--m-color-selection-default);
+  translate: 0 -50%;
+}
+
+.quote-drawer .quote-drawer-range-rail[data-side='start']::after {
+  left: var(--rs-stop-inset);
+}
+
+.quote-drawer .quote-drawer-range-rail[data-side='end']::after {
+  right: var(--rs-stop-inset);
+}
+
+.quote-drawer .quote-drawer-range-band {
+  left: calc(var(--rs-start, 0) * 100% + var(--rs-gap));
+  box-sizing: border-box;
+  width: max(0px, calc((var(--rs-end, 1) - var(--rs-start, 0)) * 100% - var(--rs-gap) * 2));
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background-color: var(--m-color-selection-default);
+  cursor: grab;
+  touch-action: none;
+  outline: 2px solid transparent;
+  outline-offset: 4px;
+}
+
+.quote-drawer .quote-drawer-range-band::before {
+  content: '';
+  position: absolute;
+  inset: calc((var(--rs-track) - var(--rs-handle)) / 2) 0;
+}
+
+.quote-drawer .quote-drawer-range-band:not(:disabled):is(:hover, :focus-visible, [data-dragging]) {
+  height: calc(var(--rs-track) + 4px);
+  filter: brightness(0.9);
+}
+
+.quote-drawer .quote-drawer-range-band[data-dragging] {
+  cursor: grabbing;
+}
+
+.quote-drawer .quote-drawer-range-band:focus-visible {
+  outline-color: var(--m-focus-ring-color);
+}
+
+.quote-drawer .quote-drawer-range-band:disabled {
+  cursor: default;
+}
+
+/* two overlaid native range inputs; only the thumbs take pointer input */
+.quote-drawer .quote-drawer-range-thumb {
+  position: absolute;
+  top: 0;
+  left: -12px;
+  width: calc(100% + 24px);
+  height: var(--rs-handle);
+  margin: 0;
+  padding: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+  accent-color: #0a8080;
+}
+
+.quote-drawer .quote-drawer-range-thumb:focus-visible {
+  outline: none;
+}
+
+.quote-drawer .quote-drawer-range-thumb::-webkit-slider-runnable-track {
+  height: var(--rs-handle);
+  background: none;
+}
+
+.quote-drawer .quote-drawer-range-thumb::-moz-range-track {
+  height: var(--rs-handle);
+  background: none;
+}
+
+.quote-drawer .quote-drawer-range-thumb::-webkit-slider-thumb {
+  box-sizing: border-box;
+  width: 24px;
+  height: var(--rs-handle);
+  border: solid transparent;
+  border-width: 0 10px;
+  border-radius: 999px;
+  background-color: var(--m-color-selection-default);
+  background-clip: content-box;
+  pointer-events: auto;
+  cursor: ew-resize;
+  appearance: none;
+  transition: border-width var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-range-thumb::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 24px;
+  height: var(--rs-handle);
+  border: solid transparent;
+  border-width: 0 10px;
+  border-radius: 999px;
+  background-color: var(--m-color-selection-default);
+  background-clip: content-box;
+  pointer-events: auto;
+  cursor: ew-resize;
+  transition: border-width var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-range-thumb:hover::-webkit-slider-thumb,
+.quote-drawer .quote-drawer-range-thumb:active::-webkit-slider-thumb,
+.quote-drawer .quote-drawer-range-thumb:focus-visible::-webkit-slider-thumb {
+  border-width: 0 8px;
+}
+
+.quote-drawer .quote-drawer-range-thumb:hover::-moz-range-thumb,
+.quote-drawer .quote-drawer-range-thumb:active::-moz-range-thumb,
+.quote-drawer .quote-drawer-range-thumb:focus-visible::-moz-range-thumb {
+  border-width: 0 8px;
+}
+
+.quote-drawer .quote-drawer-range-thumb:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--m-focus-ring-color);
+  outline-offset: 2px;
+}
+
+.quote-drawer .quote-drawer-range-thumb:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--m-focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* ---------- choice tiles ---------- */
+.quote-drawer .quote-drawer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--m-color-ink-default);
+}
+
+.quote-drawer .quote-drawer-group-description {
+  margin: -4px 0 0;
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-xs) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-tiles {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 4px;
+  border-top: 1px solid var(--m-color-outline-variant);
+  border-left: 1px solid var(--m-color-outline-variant);
+}
+
+.quote-drawer .quote-drawer-tiles[data-columns='2'],
+.quote-drawer .quote-drawer-tiles[data-columns='4'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quote-drawer .quote-drawer-tile {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-right: 1px solid var(--m-color-outline-variant);
+  border-bottom: 1px solid var(--m-color-outline-variant);
+  background-color: var(--m-color-surface-bright);
+  color: var(--m-color-ink-default);
+  font: 400 var(--qd-type-s) var(--m-font);
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: background-color var(--m-duration-fast) var(--m-easing-standard),
+    outline-color var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-tile:hover {
+  background-color: var(--m-color-surface-container-low);
+}
+
+.quote-drawer .quote-drawer-tile:has(input:checked) {
+  z-index: 1;
+  background-color: var(--m-color-selection-container-lowest);
+}
+
+.quote-drawer .quote-drawer-tile:has(input:checked)::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 2px solid var(--m-color-selection-default);
+  pointer-events: none;
+}
+
+.quote-drawer .quote-drawer-tile:active {
+  background-color: var(--m-color-selection-container-low);
+}
+
+.quote-drawer .quote-drawer-tile:has(input:focus-visible) {
+  z-index: 2;
+  outline-color: var(--m-focus-ring-color);
+}
+
+.quote-drawer .quote-drawer-tile[data-media] {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.quote-drawer .quote-drawer-tile-media {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 72px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.quote-drawer .quote-drawer-art,
+.quote-drawer .quote-drawer-offer-art,
+.quote-drawer .quote-drawer-graphic-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+}
+
+.quote-drawer .quote-drawer-art > svg,
+.quote-drawer .quote-drawer-art > img,
+.quote-drawer .quote-drawer-offer-art > svg,
+.quote-drawer .quote-drawer-offer-art > img,
+.quote-drawer .quote-drawer-graphic-art > svg,
+.quote-drawer .quote-drawer-graphic-art > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* radio ring: 16px, 2px outline ring that thickens to 4px teal when checked */
+.quote-drawer .quote-drawer-ring {
+  box-sizing: border-box;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--m-color-outline-default);
+  border-radius: 999px;
+  background-color: var(--m-color-surface-bright);
+  transition: background-color var(--m-duration-fast) var(--m-easing-standard),
+    border-color var(--m-duration-fast) var(--m-easing-standard),
+    border-width var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-tile:has(input:checked) .quote-drawer-ring {
+  border-width: 4px;
+  border-color: var(--m-color-selection-default);
+}
+
+/* checkbox: teal fill wipes in (200ms), then the tick draws (200ms after 100ms) */
+.quote-drawer .quote-drawer-check {
+  --cb-edge: var(--m-color-outline-default);
+  --cb-fill: var(--m-color-selection-default);
+  --cb-mark: var(--m-color-selection-on);
+
+  position: relative;
+  box-sizing: border-box;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  border: 1px solid var(--cb-edge);
+  border-radius: 4px;
+  background-color: var(--m-color-surface-bright);
+  transition: border-color var(--m-duration-fast) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-check-fill {
+  position: absolute;
+  inset: 0;
+  background-color: var(--cb-fill);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--m-duration-base) var(--m-easing-standard),
+    background-color var(--m-duration-base) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-check-mark {
+  position: absolute;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  overflow: visible;
+  color: var(--cb-mark);
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2px;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1px;
+  transition: stroke-dashoffset var(--m-duration-base) var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-tile:hover .quote-drawer-check {
+  --cb-edge: var(--m-color-ink-medium);
+}
+
+.quote-drawer .quote-drawer-tile:has(input:checked) .quote-drawer-check {
+  --cb-edge: var(--cb-fill);
+}
+
+.quote-drawer .quote-drawer-tile:is(:hover, :active):has(input:checked) .quote-drawer-check {
+  --cb-fill: var(--m-color-selection-on-container);
+}
+
+.quote-drawer .quote-drawer-tile:has(input:checked) .quote-drawer-check-fill {
+  transform: scaleX(1);
+}
+
+.quote-drawer .quote-drawer-tile:has(input:checked) .quote-drawer-check-mark {
+  stroke-dashoffset: 0;
+  transition-delay: var(--m-duration-fast);
+}
+
+.quote-drawer .quote-drawer-tile[data-media] .quote-drawer-ring,
+.quote-drawer .quote-drawer-tile[data-media] .quote-drawer-check {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.quote-drawer .quote-drawer-tile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quote-drawer .quote-drawer-tile[data-media] .quote-drawer-tile-text {
+  overflow-wrap: anywhere;
+}
+
+.quote-drawer .quote-drawer-tile-choice {
+  color: inherit;
+  font: 500 var(--qd-type-s) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-tile-detail {
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-xs) var(--m-font);
+}
+
+/* narrow: three media tiles become rows with the art on the right */
+.quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-ring,
+.quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-check {
+  position: relative;
+  inset: auto;
+}
+
+.quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-tile-text {
+  flex: 1 1 0;
+}
+
+.quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-tile-media {
+  order: 3;
+  width: 96px;
+  height: 64px;
+}
+
+.quote-drawer .quote-drawer-tiles[data-columns='3']:not(:has(.quote-drawer-tile[data-media])) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ---------- other provider ---------- */
+.quote-drawer .quote-drawer-inline {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.quote-drawer .quote-drawer-grow {
+  flex: auto;
+}
+
+/* ---------- text fields ---------- */
+.quote-drawer .quote-drawer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  color: var(--m-color-ink-default);
+}
+
+.quote-drawer .quote-drawer-field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-s) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-field-required {
+  color: var(--m-color-ink-default);
+}
+
+.quote-drawer .quote-drawer-field-control {
+  cursor: text;
+}
+
+.quote-drawer .quote-drawer-field-input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: var(--m-color-ink-default);
+  font: 400 var(--qd-type-s) var(--m-font);
+  outline: none;
+}
+
+.quote-drawer .quote-drawer-field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0;
+  color: var(--m-color-error-on-container);
+  font: 400 var(--qd-type-xs) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-field-error .quote-drawer-icon {
+  margin-top: 0;
+}
+
+/* ---------- estimate ---------- */
+.quote-drawer .quote-drawer-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quote-drawer .quote-drawer-result > p {
+  margin: 0;
+}
+
+.quote-drawer .quote-drawer-result-label {
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-xs) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-result-value {
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-xl) var(--m-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.quote-drawer .quote-drawer-result-note {
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-xs) var(--m-font);
+}
+
+/* ---------- recommendation card ---------- */
+.quote-drawer .quote-drawer-offer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--m-color-brand-container-low);
+}
+
+.quote-drawer .quote-drawer-offer[data-compact] {
+  gap: 8px;
+}
+
+.quote-drawer .quote-drawer-offer-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.quote-drawer .quote-drawer-offer-title {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.quote-drawer .quote-drawer-offer-title > p {
+  margin: 0;
+}
+
+.quote-drawer .quote-drawer-offer-eyebrow {
+  margin: 0;
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-xs) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-offer-name {
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-l) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-offer-reason {
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-s) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-offer-price,
+.quote-drawer .quote-drawer-offer-estimate {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quote-drawer .quote-drawer-offer-price {
+  padding-top: 12px;
+}
+
+.quote-drawer .quote-drawer-offer-estimate + .quote-drawer-offer-estimate {
+  padding-top: 12px;
+}
+
+.quote-drawer .quote-drawer-offer-amount {
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-l) var(--m-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.quote-drawer .quote-drawer-offer-brand {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 144px;
+}
+
+.quote-drawer .quote-drawer-offer-logo {
+  display: block;
+  width: 96px;
+  height: auto;
+}
+
+.quote-drawer .quote-drawer-offer-brand > .quote-drawer-offer-art {
+  position: relative;
+  width: 100%;
+  height: 120px;
+}
+
+.quote-drawer .quote-drawer-points {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quote-drawer .quote-drawer-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--m-color-ink-medium);
+  font: 400 var(--qd-type-s) var(--m-font);
+}
+
+.quote-drawer .quote-drawer-point .quote-drawer-icon {
+  margin-top: 2px;
+  color: var(--m-color-ink-medium);
+}
+
+/* Parcel Pro offers take the Parcel Pro theme (source: generated tenant theme, #004791) */
+.quote-drawer [data-brand='parcel-pro'] {
+  --m-color-primary-default: #004791;
+  --m-color-primary-hover: #4f77ab;
+  --m-color-primary-pressed: #03356e;
+  --m-color-brand-container-low: #e5ecf7;
+  --m-color-ink-default: #121215;
+  --m-color-ink-medium: #585861;
+  --m-color-surface-container-high: #eaeaec;
+  --m-color-ink-disabled: #b8b9bf;
+  --m-button-secondary-edge: #8c857e;
+  --m-button-secondary-hover-fill: #f6f5f4;
+}
+
+/* ---------- talk to sales ---------- */
+.quote-drawer .quote-drawer-graphic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.quote-drawer .quote-drawer-graphic > .quote-drawer-graphic-art {
+  position: relative;
+  width: 100%;
+  height: 120px;
+}
+
+.quote-drawer .quote-drawer-graphic-text {
+  margin: 0;
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-m) var(--m-font);
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.quote-drawer .quote-drawer-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 8px;
+  background-color: var(--m-color-brand-container-low);
+}
+
+.quote-drawer .quote-drawer-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(144px, 1fr));
+  gap: 16px;
+}
+
+/* ---------- wider screens ---------- */
+
+/* source md breakpoint: the dock moves to a 24px inset and a 14px label */
+@media (width >= 768px) {
+  .quote-drawer {
+    --qd-type-xs: 12px/14px;
+    --qd-type-s: 14px/20px;
+    --qd-type-m: 16px/24px;
+    --qd-type-l: 20px/28px;
+    --qd-type-xl: 28px/36px;
+  }
+
+  .quote-drawer .quote-drawer-dock {
+    inset: auto 24px 24px auto;
+  }
+
+  .quote-drawer .quote-drawer-dock-button {
+    font-size: 14px;
+  }
+}
+
+@media (width >= 600px) {
+  .quote-drawer .quote-drawer-sheet {
+    width: 480px;
+  }
+
+  .quote-drawer .quote-drawer-tiles[data-columns='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .quote-drawer .quote-drawer-tiles[data-columns='4'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-ring,
+  .quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-check {
+    position: absolute;
+    inset: 12px auto auto 12px;
+  }
+
+  .quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-tile-text {
+    flex: initial;
+  }
+
+  .quote-drawer .quote-drawer-tiles[data-columns='3'] .quote-drawer-tile[data-media] .quote-drawer-tile-media {
+    order: 0;
+    width: 100%;
+    height: 72px;
+  }
+}
+
+/* ---------- reduced motion: fades only, no movement ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .quote-drawer .quote-drawer-dock {
+    translate: none;
+    transition-property: opacity;
+  }
+
+  .quote-drawer .quote-drawer-pulse::after {
+    animation: none;
+  }
+
+  .quote-drawer .quote-drawer-sheet,
+  .quote-drawer .quote-drawer-sheet[open],
+  .quote-drawer.quote-drawer-legacy .quote-drawer-sheet[open]:not(.is-open) {
+    translate: none;
+    opacity: 1;
+    transition: opacity var(--m-duration-fast) var(--m-easing-standard),
+      overlay var(--m-duration-fast) allow-discrete,
+      display var(--m-duration-fast) allow-discrete;
+  }
+
+  .quote-drawer .quote-drawer-sheet:not([open]),
+  .quote-drawer.quote-drawer-legacy .quote-drawer-sheet[open]:not(.is-open) {
+    opacity: 0;
+  }
+
+  @starting-style {
+    .quote-drawer .quote-drawer-sheet[open] {
+      translate: none;
+      opacity: 0;
+    }
+  }
+
+  .quote-drawer .quote-drawer-sheet::backdrop {
+    transition-duration: var(--m-duration-fast);
+  }
+
+  .quote-drawer .quote-drawer-reveal,
+  .quote-drawer .quote-drawer-tile,
+  .quote-drawer .quote-drawer-ring,
+  .quote-drawer .quote-drawer-check,
+  .quote-drawer .quote-drawer-check-fill,
+  .quote-drawer .quote-drawer-check-mark,
+  .quote-drawer .quote-drawer-button,
+  .quote-drawer .quote-drawer-button-icon,
+  .quote-drawer .quote-drawer-select-control,
+  .quote-drawer .quote-drawer-field-control,
+  .quote-drawer .quote-drawer-option {
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+
+  .quote-drawer .quote-drawer-fade,
+  .quote-drawer .quote-drawer-arrive {
+    animation: none;
+  }
+
+  .quote-drawer .quote-drawer-button[data-variant='primary']:hover:not(:disabled) {
+    scale: none;
+  }
+
+  .quote-drawer .quote-drawer-button:hover:not(:disabled) .quote-drawer-button-trailing,
+  .quote-drawer .quote-drawer-button:focus-visible .quote-drawer-button-trailing {
+    transform: none;
+  }
+
+  .quote-drawer .quote-drawer-listbox-popover {
+    translate: none;
+  }
+}

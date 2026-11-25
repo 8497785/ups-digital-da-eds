@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "url": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "path": "us/en/shipping-insurance",
+  "timestamp": "2026-11-24T16:50:36.684Z",
+  "title": "Shipping Insurance for Businesses | InsureShield®",
+  "template": "shipping-insurance",
+  "blocks": [
+    "hero-calculator",
+    "table-comparison",
+    "cards-stat-animated",
+    "columns-illustration",
+    "widget-signal-field",
+    "columns-logo-grid",
+    "cards-illustrated",
+    "cards-story",
+    "accordion-faq"
+  ],
+  "importScript": "a6b3e0a1c0e8"
+}

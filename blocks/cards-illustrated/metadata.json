@@ -1,0 +1,24 @@
+{
+  "variantName": "cards-illustrated",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "media": "591x160 static isometric inline SVGs: the CommerceShield box with a shield (svg.m-fill-PJ52Nm) and the Parcel Pro vault (svg.m-illustrationSvg-Z4DQxa). No ongoing animation; rasterized in cleaned.html",
+    "body": "title, description, tag chips (Fraud prevention / Dispute evidence / Risk scoring; High-value goods / Embedded insurance / Risk controls), 'Learn more' link aligned right"
+  },
+  "contentPattern": {
+    "rows": [
+      [
+        "illustration image",
+        "title, description, tag list, Learn more link"
+      ]
+    ]
+  },
+  "options": [],
+  "memberVariantIds": [
+    "cards-illustrated"
+  ],
+  "sourceUrl": "https://www.insureshield.com/us/en/shipping-insurance.html",
+  "usage": "Product cards with a wide illustration on top, title, description, tag chips and a right-aligned \"Learn more\" link.",
+  "reuseGuidance": "Use for related-solution cards. A list in the body becomes tag chips; a final link-only paragraph becomes the action."
+}

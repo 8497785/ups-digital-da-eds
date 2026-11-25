@@ -34,9 +34,11 @@ solution `platform` / `insurance`; types `parcel` / `freight` / `luxury`; carrie
 coverage `blanket` / `transactional` / `unsure`; products `connect` / `complete` / `for-ups` / `parcel-pro`.
 Labels, details, images and order are free. Freight is not offered with `platform` (source rule).
 
-Illustration images are the hosted SVG exports in `/assets/shipping-insurance/quote/`, referenced by
-absolute `https://main--ups-digital-da-eds--8497785.aem.page/...svg?format=svg` URLs (scripts.js
-serves them same-origin). They carry `data-item`, `data-order`, `data-origins` and a hidden
+Illustrations are the hosted SVG exports in `/assets/shipping-insurance/`, authored as icon tokens
+`:illustration-<name>:` (e.g. `:illustration-carriers:`); scripts.js turns each token into
+`<picture><img alt="">` before the block runs. Tokens are used because the animated SVGs exceed the
+40 KB limit for SVG images in content, and plain text survives authoring and content sync. Logos
+(`logo-*.svg`, small and with alt text) stay ordinary images. The illustrations carry `data-item`, `data-order`, `data-origins` and a hidden
 `data-guides-all` group that the construct animation uses; any other SVG or image still works (static).
 
 ## Behaviour

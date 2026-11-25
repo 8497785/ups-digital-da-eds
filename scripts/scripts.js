@@ -367,6 +367,46 @@ function decorateButtons(main) {
 }
 
 /**
+ * Decorative illustrations are authored as icon tokens `:illustration-<name>:`, which serve
+ * /assets/shipping-insurance/<name>.svg. They are code-hosted (not content images) because the
+ * animated SVGs exceed the 40 KB SVG limit for content images, and a token is plain text that
+ * authoring and content sync leave untouched. Each token becomes <picture><img alt=""> in place,
+ * so blocks see the same markup as for an authored image. Runs before decorateIcons.
+ * @param {Element} main The container element
+ */
+const ILLUSTRATION_PREFIX = 'icon-illustration-';
+const ILLUSTRATION_TOKEN = /:illustration-([a-z0-9-]+):/;
+function buildIllustrations(main) {
+  const toPicture = (name) => {
+    const picture = document.createElement('picture');
+    const img = document.createElement('img');
+    img.src = `${window.hlx.codeBasePath}/assets/shipping-insurance/${name}.svg`;
+    img.alt = '';
+    img.loading = 'lazy';
+    picture.append(img);
+    return picture;
+  };
+  // rendered pages: Edge Delivery turns the token into <span class="icon icon-illustration-…">
+  main.querySelectorAll(`span.icon[class*="${ILLUSTRATION_PREFIX}"]`).forEach((span) => {
+    const cls = [...span.classList].find((c) => c.startsWith(ILLUSTRATION_PREFIX));
+    const name = cls.slice(ILLUSTRATION_PREFIX.length);
+    if (/^[a-z0-9-]+$/.test(name)) span.replaceWith(toPicture(name));
+  });
+  // unrendered markup (local .plain.html): the token is still text; replace it in place
+  const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+  const texts = [];
+  while (walker.nextNode()) {
+    if (walker.currentNode.nodeValue.includes(':illustration-')) texts.push(walker.currentNode);
+  }
+  texts.forEach((node) => {
+    const parts = node.nodeValue.split(ILLUSTRATION_TOKEN);
+    if (parts.length === 1) return;
+    const nodes = parts.map((part, i) => (i % 2 ? toPicture(part) : part)).filter((n) => n !== '');
+    node.replaceWith(...nodes);
+  });
+}
+
+/**
  * Content references this project's own code-hosted assets (`/assets/...`) by their absolute
  * aem.page/aem.live URL so they survive import and Document Authoring. Serve them from the
  * current origin instead, so they also load on branch previews and in local development.
@@ -385,22 +425,6 @@ function localizeProjectAssets(main) {
     }
     return null;
   };
-  /*
-   * Project SVG illustrations are authored as links (link text = alt text), because content
-   * images are limited to 40 KB per SVG and the animated illustrations are larger. Rebuild
-   * the <picture><img> in place so blocks see the same markup as for an authored image.
-   */
-  main.querySelectorAll('a[href]').forEach((a) => {
-    const local = toLocal(a.getAttribute('href'));
-    if (!local || !local.split('?')[0].toLowerCase().endsWith('.svg')) return;
-    const picture = document.createElement('picture');
-    const img = document.createElement('img');
-    img.src = local;
-    img.alt = linkTextToAlt(a.textContent.trim());
-    img.loading = 'lazy';
-    picture.append(img);
-    a.replaceWith(picture);
-  });
   main.querySelectorAll('img[src]').forEach((img) => {
     const local = toLocal(img.getAttribute('src'));
     if (local) img.setAttribute('src', local);
@@ -440,6 +464,7 @@ function decorateSectionMetadata(main) {
  */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
+  buildIllustrations(main);
   decorateIcons(main);
   localizeProjectAssets(main);
   buildAutoBlocks(main);

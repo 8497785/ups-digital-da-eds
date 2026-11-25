@@ -663,7 +663,7 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/parsers/quote-drawer.js
-  var ASSET_BASE6 = "https://main--ups-digital-da-eds--8497785.aem.page/assets/shipping-insurance/quote/";
+  var ASSET_BASE6 = "https://main--ups-digital-da-eds--8497785.aem.page/assets/shipping-insurance/";
   var CONTACT = "https://www.insureshield.com/us/en/about/contact-us.html";
   var HELP = "Handles can pass one another. Drag the selected band to move the whole range. Focus it and use arrow keys, Page Up or Page Down, Home or End.";
   var LOGO_IS = ["logo-insureshield", "InsureShield Shipping Insurance by UPS Capital"];
@@ -1045,35 +1045,32 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/transformers/insureshield-hosted-svg.js
-  var EMPTY_ALT_SENTINEL2 = "Image without alt text";
   var PROJECT_HOST = /^[a-z0-9-]+--ups-digital-da-eds--8497785\.aem\.(page|live)$/;
-  function hostedSvgUrl(src) {
+  var ASSET_DIR = "/assets/shipping-insurance/";
+  function illustrationName(src) {
     let u;
     try {
       u = new URL(src);
     } catch (e) {
       return null;
     }
-    if (!PROJECT_HOST.test(u.hostname) || !u.pathname.startsWith("/assets/")) return null;
-    if (!u.pathname.toLowerCase().endsWith(".svg")) return null;
-    u.searchParams.delete("format");
-    return u.toString();
+    if (!PROJECT_HOST.test(u.hostname) || !u.pathname.startsWith(ASSET_DIR)) return null;
+    const m = u.pathname.slice(ASSET_DIR.length).match(/^([a-z0-9-]+)\.svg$/i);
+    if (!m || /^logo-/i.test(m[1])) return null;
+    return m[1].toLowerCase();
   }
   function transform4(hookName, element, payload) {
     if (hookName !== "afterTransform") return;
     const doc = element.ownerDocument;
     element.querySelectorAll("img").forEach((img) => {
-      const href = hostedSvgUrl(img.getAttribute("src") || "");
-      if (!href) return;
+      const name = illustrationName(img.getAttribute("src") || "");
+      if (!name) return;
       if (img.closest("a")) {
-        console.warn(`[hosted-svg] skipping linked image: ${href}`);
+        console.warn(`[hosted-svg] skipping linked illustration: ${name}`);
         return;
       }
-      const a = doc.createElement("a");
-      a.setAttribute("href", href);
-      a.textContent = (img.getAttribute("alt") || "").trim() || EMPTY_ALT_SENTINEL2;
       const picture = img.parentElement && img.parentElement.tagName === "PICTURE" ? img.parentElement : null;
-      (picture || img).replaceWith(a);
+      (picture || img).replaceWith(doc.createTextNode(`:illustration-${name}:`));
     });
   }
 

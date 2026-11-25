@@ -3,26 +3,25 @@
 
 /**
  * InsureShield hosted SVG transformer (afterTransform only).
- * The animated illustrations live in the code bus (/assets/shipping-insurance/...) and many are
- * larger than the 40 KB Edge Delivery allows for SVG images in content, so they can't be
- * authored as images. Each <img> pointing at a project-hosted /assets/*.svg becomes a link:
- *   <a href="https://main--ups-digital-da-eds--8497785.aem.page/assets/.../name.svg">alt</a>
- * Empty alt becomes the sentinel "Image without alt text".
- * scripts/scripts.js (localizeProjectAssets) turns these links back into <picture><img>
- * before blocks are decorated.
+ * The animated illustrations live in the code bus (/assets/shipping-insurance/<name>.svg). Many
+ * exceed the 40 KB Edge Delivery allows for SVG images in content, and links or images to them are
+ * rewritten by authoring/content sync, so decorative illustrations are written as icon tokens:
+ *   :illustration-<name>:
+ * scripts/scripts.js (buildIllustrations) turns each token into <picture><img alt=""> pointing at
+ * /assets/shipping-insurance/<name>.svg before blocks are decorated.
+ * Logos (logo-*.svg: small, with meaningful alt text) stay ordinary images.
  */
 
-const EMPTY_ALT_SENTINEL = 'Image without alt text';
 const PROJECT_HOST = /^[a-z0-9-]+--ups-digital-da-eds--8497785\.aem\.(page|live)$/;
+const ASSET_DIR = '/assets/shipping-insurance/';
 
-function hostedSvgUrl(src) {
+function illustrationName(src) {
   let u;
   try { u = new URL(src); } catch (e) { return null; }
-  if (!PROJECT_HOST.test(u.hostname) || !u.pathname.startsWith('/assets/')) return null;
-  if (!u.pathname.toLowerCase().endsWith('.svg')) return null;
-  // ?format=svg only kept the importer from turning <img> into :icon: tokens; links don't need it
-  u.searchParams.delete('format');
-  return u.toString();
+  if (!PROJECT_HOST.test(u.hostname) || !u.pathname.startsWith(ASSET_DIR)) return null;
+  const m = u.pathname.slice(ASSET_DIR.length).match(/^([a-z0-9-]+)\.svg$/i);
+  if (!m || /^logo-/i.test(m[1])) return null;
+  return m[1].toLowerCase();
 }
 
 export default function transform(hookName, element, payload) {
@@ -30,19 +29,16 @@ export default function transform(hookName, element, payload) {
   const doc = element.ownerDocument;
 
   element.querySelectorAll('img').forEach((img) => {
-    const href = hostedSvgUrl(img.getAttribute('src') || '');
-    if (!href) return;
+    const name = illustrationName(img.getAttribute('src') || '');
+    if (!name) return;
     if (img.closest('a')) {
       // eslint-disable-next-line no-console
-      console.warn(`[hosted-svg] skipping linked image: ${href}`);
+      console.warn(`[hosted-svg] skipping linked illustration: ${name}`);
       return;
     }
-    const a = doc.createElement('a');
-    a.setAttribute('href', href);
-    a.textContent = (img.getAttribute('alt') || '').trim() || EMPTY_ALT_SENTINEL;
     const picture = img.parentElement && img.parentElement.tagName === 'PICTURE'
       ? img.parentElement
       : null;
-    (picture || img).replaceWith(a);
+    (picture || img).replaceWith(doc.createTextNode(`:illustration-${name}:`));
   });
 }

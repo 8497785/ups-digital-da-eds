@@ -9,12 +9,13 @@
  * until the dock is pressed, so its copy (steps, questions, options, products, reasons, talk-to-sales
  * labels, sign-up links) is emitted from constants captured from the live source
  * (QuoteDrawer-IDD6-v3F.js, 2026-11-24). Illustrations are drawn at runtime in the source and are
- * referenced as the hosted SVG exports in /assets/shipping-insurance/quote/.
+ * referenced as the hosted SVG exports in /assets/shipping-insurance/ (the hosted-svg
+ * transformer turns all but logos into :illustration-<name>: tokens).
  *
  * Table: one row per item, first cell = row key (see blocks/quote-drawer/README.md).
  */
 // Absolute: the importer resolves relative image URLs against the source origin.
-const ASSET_BASE = 'https://main--ups-digital-da-eds--8497785.aem.page/assets/shipping-insurance/quote/';
+const ASSET_BASE = 'https://main--ups-digital-da-eds--8497785.aem.page/assets/shipping-insurance/';
 const CONTACT = 'https://www.insureshield.com/us/en/about/contact-us.html';
 const HELP = 'Handles can pass one another. Drag the selected band to move the whole range. Focus it and use arrow keys, Page Up or Page Down, Home or End.';
 const LOGO_IS = ['logo-insureshield', 'InsureShield Shipping Insurance by UPS Capital'];

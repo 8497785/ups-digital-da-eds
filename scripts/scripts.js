@@ -385,6 +385,22 @@ function localizeProjectAssets(main) {
     }
     return null;
   };
+  /*
+   * Project SVG illustrations are authored as links (link text = alt text), because content
+   * images are limited to 40 KB per SVG and the animated illustrations are larger. Rebuild
+   * the <picture><img> in place so blocks see the same markup as for an authored image.
+   */
+  main.querySelectorAll('a[href]').forEach((a) => {
+    const local = toLocal(a.getAttribute('href'));
+    if (!local || !local.split('?')[0].toLowerCase().endsWith('.svg')) return;
+    const picture = document.createElement('picture');
+    const img = document.createElement('img');
+    img.src = local;
+    img.alt = linkTextToAlt(a.textContent.trim());
+    img.loading = 'lazy';
+    picture.append(img);
+    a.replaceWith(picture);
+  });
   main.querySelectorAll('img[src]').forEach((img) => {
     const local = toLocal(img.getAttribute('src'));
     if (local) img.setAttribute('src', local);

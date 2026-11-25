@@ -14,6 +14,7 @@ import quoteDrawerParser from './parsers/quote-drawer.js';
 import cleanupTransformer from './transformers/insureshield-cleanup.js';
 import sectionsTransformer from './transformers/insureshield-sections.js';
 import dmImagesTransformer from './transformers/insureshield-dm-images.js';
+import hostedSvgTransformer from './transformers/insureshield-hosted-svg.js';
 
 const PAGE_TEMPLATE = {
   "name": "shipping-insurance",
@@ -228,7 +229,7 @@ const fragmentTransformers = [];
 const lateTransformers = [...sectionTransformers, ...fragmentTransformers];
 // Page corrections ({sitename}-page-corrections.js, when it exists) run last.
 const correctionTransformers = [];
-const transformers = [cleanupTransformer, dmImagesTransformer, ...lateTransformers, ...correctionTransformers];
+const transformers = [cleanupTransformer, dmImagesTransformer, hostedSvgTransformer, ...lateTransformers, ...correctionTransformers];
 const earlyTransformers = transformers.filter((fn) => !lateTransformers.includes(fn));
 // Catalog selectors (pageInstances, pageCleanup) count the <script> and <hr> elements the importer
 // removes before transform, so a catalog template finds its targets in preprocess.

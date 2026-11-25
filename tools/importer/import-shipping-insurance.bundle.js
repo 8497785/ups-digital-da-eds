@@ -1044,6 +1044,39 @@ var CustomImportScript = (() => {
     });
   }
 
+  // tools/importer/transformers/insureshield-hosted-svg.js
+  var EMPTY_ALT_SENTINEL2 = "Image without alt text";
+  var PROJECT_HOST = /^[a-z0-9-]+--ups-digital-da-eds--8497785\.aem\.(page|live)$/;
+  function hostedSvgUrl(src) {
+    let u;
+    try {
+      u = new URL(src);
+    } catch (e) {
+      return null;
+    }
+    if (!PROJECT_HOST.test(u.hostname) || !u.pathname.startsWith("/assets/")) return null;
+    if (!u.pathname.toLowerCase().endsWith(".svg")) return null;
+    u.searchParams.delete("format");
+    return u.toString();
+  }
+  function transform4(hookName, element, payload) {
+    if (hookName !== "afterTransform") return;
+    const doc = element.ownerDocument;
+    element.querySelectorAll("img").forEach((img) => {
+      const href = hostedSvgUrl(img.getAttribute("src") || "");
+      if (!href) return;
+      if (img.closest("a")) {
+        console.warn(`[hosted-svg] skipping linked image: ${href}`);
+        return;
+      }
+      const a = doc.createElement("a");
+      a.setAttribute("href", href);
+      a.textContent = (img.getAttribute("alt") || "").trim() || EMPTY_ALT_SENTINEL2;
+      const picture = img.parentElement && img.parentElement.tagName === "PICTURE" ? img.parentElement : null;
+      (picture || img).replaceWith(a);
+    });
+  }
+
   // tools/importer/import-shipping-insurance.js
   var PAGE_TEMPLATE = {
     "name": "shipping-insurance",
@@ -1254,7 +1287,7 @@ var CustomImportScript = (() => {
   var fragmentTransformers = [];
   var lateTransformers = [...sectionTransformers, ...fragmentTransformers];
   var correctionTransformers = [];
-  var transformers = [transform, transform3, ...lateTransformers, ...correctionTransformers];
+  var transformers = [transform, transform3, transform4, ...lateTransformers, ...correctionTransformers];
   var earlyTransformers = transformers.filter((fn) => !lateTransformers.includes(fn));
   var CATALOG = Boolean(PAGE_TEMPLATE.pageCleanup || PAGE_TEMPLATE.blocks.some((b) => b.pageInstances));
   function executeTransformers(hookName, element, payload, list = transformers) {

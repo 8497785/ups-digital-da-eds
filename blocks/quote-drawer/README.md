@@ -27,7 +27,7 @@ all come from the table; the block only builds the controls.
 | `Recommendation` | Step title | list: `Eyebrow`, `Or`, `Choose`, `Continue`, `Privacy` | | |
 | `Product` | product id | art image, then logo image | name | points list (optional) + list: `Rates: 0.80 to 1.05`, `Brand: insureshield \| parcel-pro`, `Link:` sign-up URL |
 | `Reasons` | list keyed by reason id: `High value`, `Platform`, `Luxury`, `UPS only`, `Transactional`, `Blanket`, `Unsure` | | | |
-| `Sales` | Step title | illustration + lead paragraph | list of field labels and errors (`First name`, `Last name`, `Business email`, `Company name`, `ZIP code`, `Postal code`, `Phone`, `Required`, `Email error`, `ZIP error`, `Postal error`, `Phone error`, `Phone international error`, `Send`, `Privacy`) and `Contact page:` link | |
+| `Sales` | Step title | illustration + lead paragraph | list of field labels and errors (`First name`, `Last name`, `Business email`, `Company name`, `ZIP code`, `Postal code`, `Phone`, `Required`, `Email error`, `ZIP error`, `Postal error`, `Phone error`, `Phone international error`, `Send`, `Privacy`, `Unavailable`, `Failed`, `Done title`, `Done`, `Close`) and `Lead API:` link (base URL of the lead API) | |
 
 **Value ids drive the recommendation rules** (ported from the source) and must stay as authored:
 solution `platform` / `insurance`; types `parcel` / `freight` / `luxury`; carriers `ups` / `usps` / `dhl` / `fedex`;
@@ -72,11 +72,22 @@ Illustrations are the hosted SVG exports in `/assets/shipping-insurance/`, autho
   theme (`#004791`).
 - **Hand-off (source behaviour kept)**: Continue goes to the product's authored sign-up `Link` with the
   answers, exactly as the source: `?country=US&avgpkgvalue=<max value>&shipmenttype=<ids>&avgweeklyshipments=<max>&carriers=<labels>&coveragetype=<Transactional|Blanket|Unsure>`.
-- **Talk to sales** ("Expert help", or "Talk to an expert" in the hero): the source posts a lead to
-  `/api/lead`. There is no backend here, so the form is replicated with the source validation rules and
-  messages (US ZIP/phone formats, international postal/phone), and a valid **Send goes to the authored
-  `Contact page`** (https://www.insureshield.com/us/en/about/contact-us.html). Nothing is submitted
-  and no personal data leaves the page. The source "Thanks for reaching out" state is therefore not shown.
+- **Talk to sales** ("Expert help", or "Talk to an expert" in the hero): port of the source lead flow
+  (`QuoteDrawer-IDD6-v3F.js`). Send validates with the source rules and messages (required fields, business
+  email, US ZIP/phone or international postal/phone; errors show once Send was pressed, focus stays on Send),
+  then POSTs JSON to `{Lead API}/api/lead` (`Content-Type: application/json`) with the source payload:
+  `firstName`, `lastName`, `email`, `companyName`, `postalCode`, `phone`, `referralUrl` (page URL, plus the
+  stored `WT.mc_id` campaign code when the URL has none), `channelValue` (that code, kept in sessionStorage
+  as `channelValue` when a page is opened with `?WT.mc_id=`), `country` and `quote` { `shipmentTypes`,
+  `packageValue` (upper package value), `carriers` (+ other provider), `solution`, `coverage`, `weeklyVolume`
+  (upper weekly shipments) } using the source API values. Send is disabled while pending. On success the
+  step shows the authored `Done title` / `Done` with a check mark, the form collapses, Back hides and `Close`
+  closes the sheet (reopening starts a fresh form). On failure it shows the API error message, else
+  `Unavailable` (network error or blocked request), else `Failed`.
+  **Lead API** (Sales row, `Lead API:` link): the source uses its own origin (`https://www.insureshield.com`).
+  That API only allows cross-origin requests from `https://www.insureshield.com` (CORS), so from the
+  aem.page/aem.live hosts the browser blocks the request and the form shows `Unavailable` until the API
+  owner allows those origins, or the site is served from www.insureshield.com.
 - **Other blocks** open the sheet with
   `document.dispatchEvent(new CustomEvent('quote-drawer:open', { cancelable: true, detail: { entry: 'estimate' | 'sales', values: [min, max], trigger } }))`;
   the drawer calls `preventDefault()`, so the caller keeps its link as the fallback. Opening from the dock

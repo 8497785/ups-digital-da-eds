@@ -46,6 +46,7 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
   --m-color-surface-inverse: #363230;
   --m-color-ink-default: #121212;
   --m-color-ink-medium: #5f5753;
+  --m-color-success-default: #21872b;
   --m-color-ink-disabled: #bfb8af;
   --m-color-outline-default: #85858e;
   --m-color-outline-variant: #b2b2bb;
@@ -115,6 +116,11 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
 .quote-drawer .quote-drawer-icon[data-size='16'] {
   width: 16px;
   height: 16px;
+}
+
+.quote-drawer .quote-drawer-icon[data-size='48'] {
+  width: 48px;
+  height: 48px;
 }
 
 /* ---------- dock ---------- */
@@ -1563,6 +1569,7 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
   position: relative;
   width: 100%;
   height: 120px;
+  overflow: hidden;
 }
 
 .quote-drawer .quote-drawer-graphic-text {
@@ -1581,6 +1588,99 @@ main > .section.quote-drawer-container > .quote-drawer-wrapper {
   padding: 24px;
   border-radius: 8px;
   background-color: var(--m-color-brand-container-low);
+}
+
+/* sent state (source: graphic/callout [data-complete], contactForm, contactSuccess, successMark) */
+.quote-drawer .quote-drawer-callout[data-complete] {
+  gap: 0;
+}
+
+.quote-drawer .quote-drawer-contact-form {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition-property: grid-template-rows, opacity;
+  transition-duration: var(--m-duration-slow);
+  transition-timing-function: var(--m-easing-standard);
+}
+
+.quote-drawer .quote-drawer-callout[data-complete] .quote-drawer-contact-form {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.quote-drawer .quote-drawer-contact-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.quote-drawer .quote-drawer-graphic-art > :not(.quote-drawer-success-mark) {
+  transition: opacity var(--m-duration-base) var(--m-easing-exit);
+}
+
+.quote-drawer .quote-drawer-graphic[data-complete] .quote-drawer-graphic-art > :not(.quote-drawer-success-mark) {
+  opacity: 0;
+}
+
+.quote-drawer .quote-drawer-success-mark:not([hidden]) {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--m-color-success-default);
+  animation: quote-drawer-success-pop var(--m-duration-slow) var(--m-easing-enter) both;
+}
+
+.quote-drawer .quote-drawer-contact-success:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: quote-drawer-fade-in var(--m-duration-slow) var(--m-easing-enter) both;
+}
+
+.quote-drawer .quote-drawer-heading {
+  margin: 0;
+  color: var(--m-color-ink-default);
+  font: 500 var(--qd-type-l) var(--m-font);
+  text-wrap: balance;
+}
+
+.quote-drawer .quote-drawer-heading:focus {
+  outline: none;
+}
+
+@keyframes quote-drawer-success-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes quote-drawer-fade-in {
+  0% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-drawer .quote-drawer-contact-form,
+  .quote-drawer .quote-drawer-graphic-art > :not(.quote-drawer-success-mark) {
+    transition-duration: 0s;
+  }
+
+  .quote-drawer .quote-drawer-success-mark:not([hidden]),
+  .quote-drawer .quote-drawer-contact-success:not([hidden]) {
+    animation: none;
+  }
 }
 
 .quote-drawer .quote-drawer-pair {

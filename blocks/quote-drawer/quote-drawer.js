@@ -803,9 +803,94 @@ function validPhone(value, us) {
     : /^\+?[\d\s().-]+$/.test(v) && digits.length >= 7 && digits.length <= 15;
 }
 
+/* ---------- lead submission (port of the source lead API client and payload) ---------- */
+
+/* campaign code: the source stores ?WT.mc_id=… in sessionStorage as channelValue */
+const CHANNEL_PARAM = 'WT.mc_id';
+const CHANNEL_KEY = 'channelValue';
+const validChannel = (v) => v !== null && v !== '' && v.length <= 255 && /^[^\s&#?]+$/.test(v);
+const session = () => {
+  try {
+    return window.sessionStorage;
+  } catch (e) {
+    return null;
+  }
+};
+function urlChannel(href) {
+  const q = href.indexOf('?');
+  if (q === -1) return null;
+  const hash = href.indexOf('#', q);
+  const params = href.slice(q + 1, hash === -1 ? undefined : hash).split('&');
+  const hit = params.find((part) => part.split('=')[0] === CHANNEL_PARAM);
+  if (hit === undefined) return null;
+  const eq = hit.indexOf('=');
+  return eq === -1 ? '' : hit.slice(eq + 1);
+}
+function rememberChannel() {
+  const v = urlChannel(window.location.href);
+  const store = session();
+  if (!validChannel(v) || !store) return;
+  try {
+    store.setItem(CHANNEL_KEY, v);
+  } catch (e) {
+    /* storage unavailable */
+  }
+}
+function storedChannel() {
+  try {
+    const v = session()?.getItem(CHANNEL_KEY) ?? null;
+    return validChannel(v) ? v : '';
+  } catch (e) {
+    return '';
+  }
+}
+/* referral URL: the page URL, with the stored campaign code appended when the URL has none */
+function referralUrl(href = window.location.href) {
+  if (urlChannel(href) !== null) return href;
+  const v = storedChannel();
+  if (!v) return href;
+  const h = href.indexOf('#');
+  const base = h === -1 ? href : href.slice(0, h);
+  const tail = h === -1 ? '' : href.slice(h);
+  let join = '?';
+  if (base.includes('?')) join = base.endsWith('?') || base.endsWith('&') ? '' : '&';
+  return `${base}${join}${CHANNEL_PARAM}=${v}${tail}`;
+}
+
+/* API enum values sent by the source (not display copy) */
+const LEAD_TYPES = { parcel: 'Small parcel', freight: 'Freight', luxury: 'Luxury goods' };
+const LEAD_SOLUTIONS = { platform: 'Shipping, labeling and insurance', insurance: 'Insurance' };
+const LEAD_COVERAGE = { blanket: 'Blanket', transactional: 'Transactional', unsure: 'Unsure' };
+const LEAD_CARRIERS = {
+  ups: 'UPS', usps: 'USPS', dhl: 'DHL', fedex: 'FedEx',
+};
+
+/* POST {base}/api/lead with JSON; resolves { ok } or { ok: false, message } (never throws) */
+async function createLead(base, payload) {
+  let res;
+  try {
+    res = await fetch(`${String(base || '').replace(/\/$/, '')}/api/lead`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    return { ok: false, message: null };
+  }
+  let data = null;
+  try {
+    data = await res.json();
+  } catch (e) {
+    /* no JSON body */
+  }
+  if (res.ok) return { ok: true };
+  return { ok: false, message: data?.error?.message ?? null };
+}
+
 /* ---------- the drawer ---------- */
 
 export default function decorate(block) {
+  rememberChannel();
   const c = readContent(block);
   const L = {
     continue: c.labels.continue || '',
@@ -835,6 +920,8 @@ export default function decorate(block) {
     result: null,
     attempted: false,
     salesAttempted: false,
+    salesDone: false,
+    pending: false,
     form: {
       country: served,
       values: [...valuesCfg.start],
@@ -1122,8 +1209,13 @@ export default function decorate(block) {
   const salesStep = el('section', 'quote-drawer-step', { tabindex: '-1', 'data-step': 'sales' });
   const outsideLead = el('p', 'quote-drawer-lead', { hidden: true });
   const graphic = el('div', 'quote-drawer-graphic');
-  graphic.append(artFor(S.art, 'quote-drawer-graphic-art'));
-  if (S.lead) graphic.append(el('p', 'quote-drawer-graphic-text', { text: S.lead }));
+  const graphicArt = artFor(S.art, 'quote-drawer-graphic-art');
+  const successMark = el('div', 'quote-drawer-success-mark', { 'aria-hidden': 'true', hidden: true });
+  successMark.append(icon('check_circle', 48));
+  graphicArt.append(successMark);
+  graphic.append(graphicArt);
+  const graphicText = S.lead ? el('p', 'quote-drawer-graphic-text', { text: S.lead }) : null;
+  if (graphicText) graphic.append(graphicText);
   const callout = el('div', 'quote-drawer-callout');
   const salesFields = el('div', 'quote-drawer-fields');
   const pair = el('div', 'quote-drawer-pair');
@@ -1141,9 +1233,27 @@ export default function decorate(block) {
   const send = button(S.send || '', { trailing: 'arrow_forward' });
   const sendActions = el('div', 'quote-drawer-actions');
   sendActions.append(send);
-  salesFields.append(pair, fEmail.el, fCompany.el, fPostal.el, fPhone.el, sendActions);
+  /* form-level error (source: shown between the last field and Send) */
+  const formError = el('p', 'quote-drawer-field-error quote-drawer-form-error', { id: nextId('sales-error'), 'aria-live': 'polite', hidden: true });
+  const setFormError = (msg) => {
+    formError.replaceChildren();
+    formError.hidden = !msg;
+    if (msg) formError.append(icon('error', 14), el('span', '', { text: msg }));
+  };
+  salesFields.append(pair, fEmail.el, fCompany.el, fPostal.el, fPhone.el, formError, sendActions);
   if (S.privacy) salesFields.append(el('p', 'quote-drawer-note', { text: S.privacy }));
-  callout.append(salesFields);
+  const contactForm = el('div', 'quote-drawer-contact-form');
+  const contactInner = el('div', 'quote-drawer-contact-inner');
+  contactInner.append(salesFields);
+  contactForm.append(contactInner);
+  /* success panel (source contactSuccess) */
+  const success = el('div', 'quote-drawer-contact-success', { hidden: true });
+  const successHeading = el('h3', 'quote-drawer-heading', { tabindex: '-1', text: S['done-title'] || '' });
+  const successActions = el('div', 'quote-drawer-actions');
+  const closeDone = button(S.close || L.close || '', { variant: 'secondary' });
+  successActions.append(closeDone);
+  success.append(successHeading, el('p', 'quote-drawer-lead', { text: S.done || '' }), successActions);
+  callout.append(contactForm, success);
   salesStep.append(outsideLead, graphic, callout);
 
   const salesErrors = () => {
@@ -1168,15 +1278,70 @@ export default function decorate(block) {
     const formatted = formatPhone(fPhone.input.value, inUs());
     if (formatted !== fPhone.input.value) fPhone.input.value = formatted;
   });
-  /* no lead API here: once valid, continue on the contact page (nothing is submitted) */
-  send.addEventListener('click', () => {
+  /* payload as the source (oo): contact fields, referral URL, campaign code, quote answers */
+  const leadPayload = () => {
+    const f = state.form;
+    const carriers = f.carriers.map((id) => LEAD_CARRIERS[id] ?? id);
+    if (f.other.trim() !== '') carriers.push(f.other.trim());
+    return {
+      firstName: fFirst.input.value.trim(),
+      lastName: fLast.input.value.trim(),
+      email: fEmail.input.value.trim(),
+      companyName: fCompany.input.value.trim(),
+      postalCode: fPostal.input.value.trim(),
+      phone: fPhone.input.value.trim(),
+      referralUrl: referralUrl(),
+      channelValue: storedChannel(),
+      country: f.country,
+      quote: {
+        shipmentTypes: f.types.map((t) => LEAD_TYPES[t]),
+        packageValue: f.values[1],
+        carriers,
+        solution: f.solution === null ? '' : LEAD_SOLUTIONS[f.solution],
+        coverage: f.coverage === null ? '' : LEAD_COVERAGE[f.coverage],
+        weeklyVolume: f.volume[1],
+      },
+    };
+  };
+  const setDone = (done) => {
+    state.salesDone = done;
+    graphic.toggleAttribute('data-complete', done);
+    callout.toggleAttribute('data-complete', done);
+    successMark.hidden = !done;
+    if (graphicText) graphicText.hidden = done;
+    contactForm.inert = done;
+    contactForm.setAttribute('aria-hidden', String(done));
+    success.hidden = !done;
+  };
+  /* source: validate, then POST to the lead API; Send is disabled while pending;
+     success shows the confirmation, failure the API message (or the generic one) */
+  send.addEventListener('click', async () => {
+    if (state.pending) return;
     state.salesAttempted = true;
     const errs = showSalesErrors();
-    if (errs.length) {
-      errs[0][0].input.focus();
+    if (errs.length) return;
+    state.pending = true;
+    send.disabled = true;
+    setFormError('');
+    let result;
+    try {
+      result = await createLead(S['lead-api'] || window.location.origin, leadPayload());
+    } catch (e) {
+      result = { ok: false, message: S.failed || '' };
+    }
+    state.pending = false;
+    send.disabled = false;
+    if (!result.ok) {
+      setFormError(result.message || S.unavailable || S.failed || '');
+      /* the disabled Send dropped focus while pending: give it back */
+      const lost = !dialog.contains(document.activeElement) || document.activeElement === dialog;
+      if (lost) send.focus();
       return;
     }
-    if (S['contact-page']) window.location.assign(S['contact-page']);
+    setDone(true);
+    title.textContent = S['done-title'] || '';
+    backButton.hidden = true;
+    successHeading.focus({ preventScroll: true });
   });
 
   body.append(formStep, recStep, salesStep);
@@ -1317,6 +1482,12 @@ export default function decorate(block) {
     state.previous = null;
     state.salesAttempted = false;
     [fFirst, fLast, fEmail, fCompany, fPostal, fPhone].forEach((f) => f.setError(''));
+    setFormError('');
+    /* after a completed submission, start a fresh contact form */
+    if (state.salesDone) {
+      setDone(false);
+      [fFirst, fLast, fEmail, fCompany, fPostal, fPhone].forEach((f) => { f.input.value = ''; });
+    }
     update();
     if (!dialog.open) {
       savedOverflow = document.documentElement.style.overflow;
@@ -1353,6 +1524,7 @@ export default function decorate(block) {
     });
   }
   closeButton.addEventListener('click', closeSheet);
+  closeDone.addEventListener('click', closeSheet);
   dockButton.addEventListener('click', () => openSheet({ entry: 'estimate', trigger: dockButton }));
   document.addEventListener(OPEN_EVENT, (e) => {
     e.preventDefault();

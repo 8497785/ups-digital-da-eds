@@ -664,7 +664,7 @@ var CustomImportScript = (() => {
 
   // tools/importer/parsers/quote-drawer.js
   var ASSET_BASE6 = "https://main--ups-digital-da-eds--8497785.aem.page/assets/shipping-insurance/";
-  var CONTACT = "https://www.insureshield.com/us/en/about/contact-us.html";
+  var LEAD_API = "https://www.insureshield.com";
   var HELP = "Handles can pass one another. Drag the selected band to move the whole range. Focus it and use arrow keys, Page Up or Page Down, Home or End.";
   var LOGO_IS = ["logo-insureshield", "InsureShield Shipping Insurance by UPS Capital"];
   var DRAWER = {
@@ -811,7 +811,13 @@ var CustomImportScript = (() => {
         ["Phone international error", "Enter a phone number with 7 to 15 digits, including the country code."],
         ["Send", "Send"],
         ["Privacy", "Your information is secure and never shared."],
-        ["Contact page", [CONTACT, "Contact us"]]
+        ["Unavailable", "Something went wrong. Try again later."],
+        ["Failed", "Something went wrong. Try again."],
+        ["Done title", "Thanks for reaching out"],
+        ["Done", "An InsureShield representative will contact you soon."],
+        ["Close", "Close"],
+        /* lead API base: the form POSTs to {base}/api/lead (source config leadApiUrl) */
+        ["Lead API", [LEAD_API, LEAD_API]]
       ]
     }
   };

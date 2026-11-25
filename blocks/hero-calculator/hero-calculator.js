@@ -114,22 +114,121 @@ const smoothstep = (a, b, x) => {
 };
 
 const ISO_H = Math.asin(Math.tan((17.5 * Math.PI) / 180));
+/* source hero config: lattice, accent 0, pointer on, pointerStrength 1 (speed 1, seed 7) */
 const LATTICE = {
-  cell: 104, density: 0.62, seed: 7, node: 2.2, hair: '#b2b2bb', hairLow: 'rgb(26 26 31 / 12%)',
+  cell: 104, density: 0.62, seed: 7, node: 2.2, pointerStrength: 1, speed: 1, still: 5200,
 };
+/* source palette (light theme), resolved from its CSS custom properties */
+const LATTICE_TOKENS = {
+  hair: '#b2b2bb',
+  hairLow: '#1a1a1f1f',
+  'teal-strong': '#0a8080',
+  'blue-strong': '#0662bb',
+  'gold-strong': '#fcc400',
+};
+/* resolved like the source (_d + um): painted on a 1x1 canvas and read back as rgba() */
+const LATTICE_COLORS = {};
+function resolveLatticeColors() {
+  if (Object.keys(LATTICE_COLORS).length) return;
+  const probe = document.createElement('canvas');
+  probe.width = 1;
+  probe.height = 1;
+  const pctx = probe.getContext('2d', { willReadFrequently: true });
+  Object.entries(LATTICE_TOKENS).forEach(([name, css]) => {
+    if (!pctx) {
+      LATTICE_COLORS[name] = css;
+      return;
+    }
+    pctx.clearRect(0, 0, 1, 1);
+    pctx.fillStyle = css;
+    pctx.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = pctx.getImageData(0, 0, 1, 1).data;
+    LATTICE_COLORS[name] = `rgba(${r},${g},${b},${(a / 255).toFixed(3)})`;
+  });
+}
+/* colour wheel: teal -> blue -> gold, one turn every 18 s (source pS / mS / hS) */
+const WHEEL = ['teal', 'blue', 'gold'];
+const WHEEL_MS = 18000;
+function wheelTone(time, offset, pick) {
+  const n = WHEEL.length;
+  const r = ((((time / WHEEL_MS + offset) % 1) + 1) % 1) * n;
+  const i = Math.floor(r) % n;
+  const mix = smoothstep(0.55, 1, r - Math.floor(r));
+  return pick < mix ? WHEEL[(i + 1) % n] : WHEEL[i];
+}
 
-function drawLattice(canvas) {
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-  if (!w || !h) return;
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  canvas.width = Math.round(w * dpr);
-  canvas.height = Math.round(h * dpr);
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, w, h);
+/* pointer influence (source hm): full within 30% of the radius, eased out to the radius */
+function pointerInfluence(pointer, radius, x, y) {
+  if (!pointer || pointer.amount <= 0.001) return 0;
+  const dx = x - pointer.x;
+  const dy = y - pointer.y;
+  if (dx > radius || dx < -radius || dy > radius || dy < -radius) return 0;
+  return pointer.amount * (1 - smoothstep(radius * 0.3, radius, Math.hypot(dx, dy)));
+}
 
+/*
+ * Batched canvas painter (source cm/pm): shapes with the same paint and alpha share one path,
+ * alpha is quantised to 1/24 steps, groups are emitted in first-use order on flush.
+ */
+const ALPHA_STEPS = 24;
+class LatticePainter {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.open = new Map();
+    this.order = [];
+  }
+
+  sink(paint, alpha) {
+    const q = Math.round(Math.min(1, alpha) * ALPHA_STEPS);
+    if (q <= 0) return null;
+    const key = `${paint.fill || ''}|${paint.stroke || ''}|${paint.width || 1}|${q}`;
+    let group = this.open.get(key);
+    if (!group) {
+      group = { paint, alpha: q / ALPHA_STEPS, path: new Path2D() };
+      this.open.set(key, group);
+      this.order.push(group);
+    }
+    return group.path;
+  }
+
+  line(paint, x1, y1, x2, y2, alpha = 1) {
+    const path = this.sink(paint, alpha);
+    if (!path) return;
+    path.moveTo(x1, y1);
+    path.lineTo(x2, y2);
+  }
+
+  circle(paint, x, y, r, alpha = 1) {
+    if (r <= 0.05) return;
+    const path = this.sink(paint, alpha);
+    if (!path) return;
+    path.moveTo(x + r, y);
+    path.arc(x, y, r, 0, Math.PI * 2);
+  }
+
+  flush() {
+    const { ctx } = this;
+    this.order.forEach(({ paint, alpha, path }) => {
+      ctx.globalAlpha = alpha;
+      if (paint.fill) {
+        ctx.fillStyle = LATTICE_COLORS[paint.fill];
+        ctx.fill(path);
+      }
+      if (paint.stroke) {
+        ctx.strokeStyle = LATTICE_COLORS[paint.stroke];
+        ctx.lineWidth = paint.width || 1;
+        ctx.setLineDash([]);
+        ctx.stroke(path);
+      }
+    });
+    ctx.globalAlpha = 1;
+    this.open = new Map();
+    this.order = [];
+  }
+}
+
+/* builds the lattice nodes and edges for a w x h band (geometry as the source yS) */
+function buildLattice(w, h) {
   const n = LATTICE.cell;
   const a = Math.SQRT1_2 * n;
   const o = Math.SQRT1_2 * Math.sin(ISO_H) * n;
@@ -141,10 +240,13 @@ function drawLattice(canvas) {
   const pad = n * 0.6;
   /* wide: densest on the right (behind the calculator), soft top/bottom edges;
      narrow: the canvas is a band below the text, full at its top, fading over its lower third */
+  /* wide = source frame "left" (Vf + Kf): zone from 58% of the width, feathered over 16% of
+     the width on the left and 7% of the height top and bottom */
   const fadeAt = (x, y) => {
     if (!wide) return 1 - smoothstep(h * 0.64, h, y);
-    const edges = smoothstep(0, 48, y) * (1 - smoothstep(h - 48, h, y));
-    return smoothstep(w * 0.41, w * 0.58, x) * edges;
+    const l = h * 0.07;
+    const edgeFade = smoothstep(0, l, y) * (1 - smoothstep(h - l, h, y));
+    return smoothstep(w * 0.42, w * 0.58, x) * edgeFade;
   };
 
   const i0 = Math.floor((-pad - cx) / a);
@@ -195,27 +297,72 @@ function drawLattice(canvas) {
       node.fade = 0;
     }
   });
+  return { nodes, edges };
+}
 
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = LATTICE.hairLow;
-  edges.forEach(([p, q]) => {
+const PAINT = {
+  hairLow: { stroke: 'hairLow' },
+  hair: { stroke: 'hair' },
+  node: { fill: 'hair' },
+};
+const tonePaint = new Map();
+const toned = (tone, fill) => {
+  const k = `${tone}${fill}`;
+  if (!tonePaint.has(k)) {
+    tonePaint.set(k, fill ? { fill: `${tone}-strong` } : { stroke: `${tone}-strong`, width: 2 });
+  }
+  return tonePaint.get(k);
+};
+
+/*
+ * One frame (source yS draw, accent 0): hairline edges and grey nodes; near the pointer the
+ * lattice comes forward (darker edges, nodes up to 1.5x) and the nearest edges and their nodes
+ * light up in the colour wheel tone.
+ */
+function renderLattice(painter, { nodes, edges }, time, pointer) {
+  const radius = 70 + 150 * LATTICE.pointerStrength;
+  const near = pointer
+    ? nodes.map((node) => pointerInfluence(pointer, radius, node.x, node.y))
+    : null;
+  const lit = near ? new Float32Array(nodes.length) : null;
+  const litTone = lit ? nodes.map(() => null) : [];
+  const later = [];
+  edges.forEach(([p, q], e) => {
     const A = nodes[p];
     const B = nodes[q];
-    ctx.globalAlpha = 0.35 + 0.65 * Math.min(A.fade, B.fade);
-    ctx.beginPath();
-    ctx.moveTo(A.x, A.y);
-    ctx.lineTo(B.x, B.y);
-    ctx.stroke();
+    const d = Math.min(A.fade, B.fade);
+    painter.line(PAINT.hairLow, A.x, A.y, B.x, B.y, 0.35 + 0.65 * d);
+    if (!near) return;
+    const f = Math.min(near[p], near[q]);
+    if (f > 0.02) painter.line(PAINT.hair, A.x, A.y, B.x, B.y, f * d);
+    if (f > 0.35) {
+      const alpha = Math.min(1, (f - 0.35) * 1.8) * d;
+      const tone = wheelTone(time, -0.06 * (1 - f), hash(e, 6, 0, LATTICE.seed));
+      later.push(() => painter.line(toned(tone, false), A.x, A.y, B.x, B.y, alpha));
+      [p, q].forEach((k) => {
+        if (alpha > lit[k]) {
+          lit[k] = alpha;
+          litTone[k] = tone;
+        }
+      });
+    }
   });
-  ctx.fillStyle = LATTICE.hair;
-  nodes.forEach((node) => {
+  painter.flush();
+  later.forEach((draw) => draw());
+  painter.flush();
+  const litNodes = [];
+  nodes.forEach((node, k) => {
     if (node.fade <= 0) return;
-    ctx.globalAlpha = 0.35 + 0.65 * node.fade;
-    ctx.beginPath();
-    ctx.arc(node.x, node.y, LATTICE.node, 0, Math.PI * 2);
-    ctx.fill();
+    const r = LATTICE.node * (near ? 1 + near[k] * 0.5 : 1);
+    const on = lit ? lit[k] : 0;
+    painter.circle(PAINT.node, node.x, node.y, r, (0.35 + 0.65 * node.fade) * (1 - on));
+    if (on > 0.02 && litTone[k]) {
+      litNodes.push(() => painter.circle(toned(litTone[k], true), node.x, node.y, r, on));
+    }
   });
-  ctx.globalAlpha = 1;
+  painter.flush();
+  litNodes.forEach((draw) => draw());
+  painter.flush();
 }
 
 function mountLattice(block, text) {
@@ -225,6 +372,10 @@ function mountLattice(block, text) {
   const canvas = document.createElement('canvas');
   host.append(canvas);
   block.prepend(host);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  resolveLatticeColors();
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   /* source narrow pattern is a band: it starts where the text column ends (behind the card) */
   const place = () => {
@@ -232,22 +383,115 @@ function mountLattice(block, text) {
     const top = band ? `${text.offsetTop + text.offsetHeight}px` : '';
     if (host.style.top !== top) host.style.top = top;
   };
-  let frame = 0;
-  const redraw = () => {
-    if (frame) return;
-    frame = requestAnimationFrame(() => {
-      frame = 0;
-      place();
-      drawLattice(canvas);
-      canvas.dataset.live = 'true';
+
+  let geometry = null;
+  let size = [0, 0];
+  let dpr = 1;
+  /* pattern clock: runs while the band is on screen (source: time advances every visible frame) */
+  let clock = LATTICE.still;
+  let visibleSince = 0;
+  const now = () => clock + (visibleSince ? (performance.now() - visibleSince) * LATTICE.speed : 0);
+  const target = { x: 0, y: 0, inside: false };
+  const pointer = { x: 0, y: 0, amount: 0 };
+
+  const paint = (withPointer) => {
+    if (!geometry) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size[0], size[1]);
+    const active = withPointer && pointer.amount > 0.001 ? pointer : null;
+    renderLattice(new LatticePainter(ctx), geometry, now(), active);
+  };
+  const layout = () => {
+    place();
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (!w || !h) return;
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    size = [w, h];
+    geometry = buildLattice(w, h);
+    paint(true);
+    canvas.dataset.live = 'true';
+  };
+
+  /* pointer easing as the source: position follows with 1 - e^(-dt/90), presence with
+     1 - e^(-dt/160) (half of --m-duration-slow); frames run only while something moves */
+  let raf = 0;
+  let last = 0;
+  let visible = false;
+  const frame = (t) => {
+    raf = 0;
+    const dt = last ? Math.min(64, t - last) : 16;
+    last = t;
+    const follow = 1 - Math.exp(-dt / 90);
+    const settle = 1 - Math.exp(-dt / 160);
+    if (pointer.amount < 0.002 && target.inside) {
+      pointer.x = target.x;
+      pointer.y = target.y;
+    }
+    pointer.x += (target.x - pointer.x) * follow;
+    pointer.y += (target.y - pointer.y) * follow;
+    pointer.amount += (Number(target.inside) - pointer.amount) * settle;
+    const moving = Math.abs(Number(target.inside) - pointer.amount) > 0.002
+      || Math.hypot(target.x - pointer.x, target.y - pointer.y) > 0.5;
+    if (!moving && !target.inside) pointer.amount = 0;
+    paint(true);
+    /* keep animating while the tone wheel matters (pointer present) or the pointer settles */
+    if (visible && (moving || target.inside)) raf = requestAnimationFrame(frame);
+    else last = 0;
+  };
+  const kick = () => {
+    if (!raf && visible && geometry && !reduced.matches) raf = requestAnimationFrame(frame);
+  };
+  block.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch' || reduced.matches) return;
+    const r = canvas.getBoundingClientRect();
+    target.x = e.clientX - r.left;
+    target.y = e.clientY - r.top;
+    target.inside = true;
+    kick();
+  });
+  block.addEventListener('pointerleave', () => {
+    target.inside = false;
+    kick();
+  });
+  const io = new IntersectionObserver(([entry]) => {
+    const on = entry.isIntersecting && document.visibilityState !== 'hidden';
+    if (on === visible) return;
+    visible = on;
+    if (on) visibleSince = performance.now();
+    else {
+      clock = now();
+      visibleSince = 0;
+    }
+    if (on) kick();
+  });
+  io.observe(host);
+  document.addEventListener('visibilitychange', () => {
+    const on = document.visibilityState !== 'hidden';
+    if (!on && visible) {
+      clock = now();
+      visibleSince = 0;
+      visible = false;
+    }
+  });
+
+  let pending = 0;
+  const relayout = () => {
+    if (pending) return;
+    pending = requestAnimationFrame(() => {
+      pending = 0;
+      layout();
     });
   };
   const ro = new ResizeObserver(() => {
     if (!block.isConnected) {
       ro.disconnect();
+      io.disconnect();
       return;
     }
-    redraw();
+    relayout();
   });
   ro.observe(host);
   ro.observe(block);
